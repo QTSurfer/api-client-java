@@ -1,0 +1,26 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "words": [
+    "qtsurfer",
+    "QTSurfer",
+    "backtest",
+    "backtesting",
+    "Backtest",
+    "Backtesting",
+    "binance",
+    "BTCUSDT",
+    "USDT",
+    "heyapi",
+    "jitpack",
+    "openapi",
+    "openjdk",
+    "getenv"
+  ],
+  "ignorePaths": [
+    "node_modules",
+    "target",
+    ".mvn",
+    "pom.xml"
+  ]
+}
