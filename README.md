@@ -1,18 +1,28 @@
-# net.qtsurfer:api-client
+<h1 align="center">QTSurfer API Client · Java</h1>
 
 <p align="center">
   <a href="https://github.com/QTSurfer/api-client-java/actions/workflows/ci.yml"><img src="https://github.com/QTSurfer/api-client-java/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://jitpack.io/#QTSurfer/api-client-java"><img src="https://jitpack.io/v/QTSurfer/api-client-java.svg" alt="JitPack"></a>
+  <img src="https://img.shields.io/badge/JDK-17%2B-blue?logo=openjdk&logoColor=white" alt="JDK 17+">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License"></a>
 </p>
 
-Auto-generated Java API client for the [QTSurfer API](https://github.com/QTSurfer/qtsurfer-api), produced from the OpenAPI 3.1 spec with [openapi-generator](https://openapi-generator.tech) and the `java` + `native` library (JDK `java.net.http.HttpClient`).
+<p align="center">
+  Auto-generated Java client for the <a href="https://github.com/QTSurfer/qtsurfer-api">QTSurfer API</a>, built from the OpenAPI 3.1 spec with <a href="https://openapi-generator.tech">openapi-generator</a> and the JDK's <code>java.net.http.HttpClient</code>.
+</p>
 
-This package is intentionally thin: one method per endpoint, 1:1 with the spec. For workflow orchestration (polling, retries, domain objects, unified errors), use [`net.qtsurfer:sdk`](https://github.com/QTSurfer/sdk-java).
+<p align="center">
+  <code>net.qtsurfer:api-client</code> · <code>com.github.QTSurfer:api-client-java</code>
+</p>
 
-- `java.net.http.HttpClient`-based; zero HTTP runtime dependencies beyond Jackson.
-- Generated sources are written to `target/generated-sources/openapi` on every build (spec fetched from `main` of [`QTSurfer/qtsurfer-api`](https://github.com/QTSurfer/qtsurfer-api)).
-- Requires **JDK 17+**.
+---
+
+Intentionally thin: one method per endpoint, 1:1 with the spec. For workflow orchestration (polling, retries, domain objects, unified errors), use [`net.qtsurfer:sdk`](https://github.com/QTSurfer/sdk-java).
+
+- **Zero HTTP runtime deps** — `java.net.http.HttpClient` (JDK built-in) + Jackson for JSON.
+- **Spec-driven** — generated sources fetched from [`QTSurfer/qtsurfer-api`](https://github.com/QTSurfer/qtsurfer-api) on every build.
+- **JDK 17+** — modern language features, long-term support.
+- **Distributed via JitPack** today; Maven Central later.
 
 ## Installation
 
