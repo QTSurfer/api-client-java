@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.1.1] — 2026-04-15
+
+### Fixed
+
+- Downgrade Maven plugin versions (compiler 3.11.0, surefire 3.2.5, source 3.3.0, javadoc 3.6.3) so that the build works under JitPack's bundled Maven 3.5.x.
+
 ## [0.1.0] — 2026-04-15
 
 ### Added
