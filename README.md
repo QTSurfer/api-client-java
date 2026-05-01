@@ -78,12 +78,32 @@ List<Exchange> result = exchanges.getExchanges();
 
 | API class | Methods |
 | --- | --- |
-| `ExchangeApi` | `getExchanges()` |
-| `InstrumentApi` | `getInstruments(exchangeId)` |
+| `ExchangeApi` | `getExchanges()`, `getInstruments(exchangeId)` |
+| `ExchangeBinaryDownloads` | `getTickersHour(...)`, `getKlinesHour(...)` — Lastra/Parquet streams (manual; see note below) |
 | `StrategyApi` | `postStrategy(body, xCompileAsync)`, `getStrategyStatus(strategyId)` |
 | `BacktestingApi` | `prepareBacktesting`, `getPreparationStatus`, `executeBacktesting`, `cancelExecution`, `getExecutionResult` |
 
 All generated model types (`Exchange`, `InstrumentDetail`, `JobState`, `BacktestJobResult`, `ResultMap`, `ResponseError`, …) live under `net.qtsurfer.api.client.model`.
+
+### Binary downloads (`/exchange/{ex}/tickers|klines/{base}/{quote}`)
+
+These endpoints return raw [Lastra](https://github.com/QTSurfer/lastra-java) bytes (default) or Parquet (`format=parquet`). The auto-generated `ExchangeApi.getExchangeTickersHour` / `getExchangeKlinesHour` methods are unusable for binary payloads — openapi-generator's `native` library decodes the body as UTF-8 and feeds it to Jackson, which corrupts the bytes. Use `ExchangeBinaryDownloads` instead:
+
+```java
+import net.qtsurfer.api.client.binary.ExchangeBinaryDownloads;
+import net.qtsurfer.api.client.binary.ExchangeBinaryDownloads.Format;
+
+ExchangeBinaryDownloads downloads = new ExchangeBinaryDownloads(client);
+try (var in = downloads.getTickersHour("binance", "BTC", "USDT", "2026-01-15T10")) {
+    Files.copy(in, Path.of("BTC_USDT_2026-01-15_h10.lastra"));
+}
+
+try (var in = downloads.getKlinesHour("binance", "BTC", "USDT", "2026-01-15T10", Format.PARQUET)) {
+    // feed into Apache Parquet, DuckDB, etc.
+}
+```
+
+The class reuses the `ApiClient`'s `HttpClient` and request interceptor, so any `Authorization` header set at the client level applies automatically.
 
 ## Configuring the client
 
