@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://github.com/QTSurfer/api-client-java/actions/workflows/ci.yml"><img src="https://github.com/QTSurfer/api-client-java/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="https://jitpack.io/#QTSurfer/api-client-java"><img src="https://jitpack.io/v/QTSurfer/api-client-java.svg" alt="JitPack"></a>
+  <a href="https://jitpack.io/#com.qtsurfer/api-client"><img src="https://jitpack.io/v/com.qtsurfer/api-client.svg" alt="JitPack"></a>
   <img src="https://img.shields.io/badge/JDK-17%2B-blue?logo=openjdk&logoColor=white" alt="JDK 17+">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License"></a>
 </p>
