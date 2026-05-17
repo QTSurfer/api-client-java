@@ -1,9 +1,9 @@
-package net.qtsurfer.api.client.binary;
+package com.qtsurfer.api.client.binary;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
-import net.qtsurfer.api.client.invoker.ApiClient;
-import net.qtsurfer.api.client.invoker.ApiException;
+import com.qtsurfer.api.client.invoker.ApiClient;
+import com.qtsurfer.api.client.invoker.ApiException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

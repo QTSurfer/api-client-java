@@ -1,7 +1,7 @@
-package net.qtsurfer.api.client.binary;
+package com.qtsurfer.api.client.binary;
 
-import net.qtsurfer.api.client.invoker.ApiClient;
-import net.qtsurfer.api.client.invoker.ApiException;
+import com.qtsurfer.api.client.invoker.ApiClient;
+import com.qtsurfer.api.client.invoker.ApiException;
 
 import java.io.IOException;
 import java.io.InputStream;

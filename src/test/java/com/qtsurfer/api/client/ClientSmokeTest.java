@@ -1,6 +1,6 @@
-package net.qtsurfer.api.client;
+package com.qtsurfer.api.client;
 
-import net.qtsurfer.api.client.invoker.ApiClient;
+import com.qtsurfer.api.client.invoker.ApiClient;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

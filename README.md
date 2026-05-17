@@ -12,12 +12,12 @@
 </p>
 
 <p align="center">
-  <code>net.qtsurfer:api-client</code> · <code>com.github.QTSurfer:api-client-java</code>
+  <code>com.qtsurfer:api-client</code> · <code>com.qtsurfer:api-client</code>
 </p>
 
 ---
 
-Intentionally thin: one method per endpoint, 1:1 with the spec. For workflow orchestration (polling, retries, domain objects, unified errors), use [`net.qtsurfer:sdk`](https://github.com/QTSurfer/sdk-java).
+Intentionally thin: one method per endpoint, 1:1 with the spec. For workflow orchestration (polling, retries, domain objects, unified errors), use [`com.qtsurfer:sdk`](https://github.com/QTSurfer/sdk-java).
 
 - **Zero HTTP runtime deps** — `java.net.http.HttpClient` (JDK built-in) + Jackson for JSON.
 - **Spec-driven** — generated sources fetched from [`QTSurfer/qtsurfer-api`](https://github.com/QTSurfer/qtsurfer-api) on every build.
@@ -39,9 +39,9 @@ Add the JitPack repository and the dependency:
 </repositories>
 
 <dependency>
-  <groupId>com.github.QTSurfer</groupId>
+  <groupId>com.qtsurfer</groupId>
   <artifactId>api-client-java</artifactId>
-  <version>v0.1.2</version>
+  <version>0.2.0</version>
 </dependency>
 ```
 
@@ -49,19 +49,19 @@ For Gradle:
 
 ```gradle
 repositories { maven { url 'https://jitpack.io' } }
-dependencies { implementation 'com.github.QTSurfer:api-client-java:v0.1.2' }
+dependencies { implementation 'com.qtsurfer:api-client:0.2.0' }
 ```
 
 ### Via Maven Central (future)
 
-Once published to Central, the coordinate will be `net.qtsurfer:api-client:0.1.2`.
+Once published to Central, the coordinate will be `com.qtsurfer:api-client:0.1.2`.
 
 ## Quick start
 
 ```java
-import net.qtsurfer.api.client.api.ExchangeApi;
-import net.qtsurfer.api.client.invoker.ApiClient;
-import net.qtsurfer.api.client.model.Exchange;
+import com.qtsurfer.api.client.api.ExchangeApi;
+import com.qtsurfer.api.client.invoker.ApiClient;
+import com.qtsurfer.api.client.model.Exchange;
 
 import java.util.List;
 
@@ -83,15 +83,15 @@ List<Exchange> result = exchanges.getExchanges();
 | `StrategyApi` | `postStrategy(body, xCompileAsync)`, `getStrategyStatus(strategyId)` |
 | `BacktestingApi` | `prepareBacktesting`, `getPreparationStatus`, `executeBacktesting`, `cancelExecution`, `getExecutionResult` |
 
-All generated model types (`Exchange`, `InstrumentDetail`, `JobState`, `BacktestJobResult`, `ResultMap`, `ResponseError`, …) live under `net.qtsurfer.api.client.model`.
+All generated model types (`Exchange`, `InstrumentDetail`, `JobState`, `BacktestJobResult`, `ResultMap`, `ResponseError`, …) live under `com.qtsurfer.api.client.model`.
 
 ### Binary downloads (`/exchange/{ex}/tickers|klines/{base}/{quote}`)
 
 These endpoints return raw [Lastra](https://github.com/QTSurfer/lastra-java) bytes (default) or Parquet (`format=parquet`). The auto-generated `ExchangeApi.getExchangeTickersHour` / `getExchangeKlinesHour` methods are unusable for binary payloads — openapi-generator's `native` library decodes the body as UTF-8 and feeds it to Jackson, which corrupts the bytes. Use `ExchangeBinaryDownloads` instead:
 
 ```java
-import net.qtsurfer.api.client.binary.ExchangeBinaryDownloads;
-import net.qtsurfer.api.client.binary.ExchangeBinaryDownloads.Format;
+import com.qtsurfer.api.client.binary.ExchangeBinaryDownloads;
+import com.qtsurfer.api.client.binary.ExchangeBinaryDownloads.Format;
 
 ExchangeBinaryDownloads downloads = new ExchangeBinaryDownloads(client);
 try (var in = downloads.getTickersHour("binance", "BTC", "USDT", "2026-01-15T10")) {

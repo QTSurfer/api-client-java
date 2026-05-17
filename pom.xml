@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>net.qtsurfer</groupId>
+    <groupId>com.qtsurfer</groupId>
     <artifactId>api-client</artifactId>
-    <version>0.1.2</version>
+    <version>0.2.0</version>
     <packaging>jar</packaging>
 
     <name>QTSurfer API Client</name>
@@ -120,9 +120,9 @@
                             <generatorName>java</generatorName>
                             <library>native</library>
                             <output>${generated.sources.dir}</output>
-                            <apiPackage>net.qtsurfer.api.client.api</apiPackage>
-                            <modelPackage>net.qtsurfer.api.client.model</modelPackage>
-                            <invokerPackage>net.qtsurfer.api.client.invoker</invokerPackage>
+                            <apiPackage>com.qtsurfer.api.client.api</apiPackage>
+                            <modelPackage>com.qtsurfer.api.client.model</modelPackage>
+                            <invokerPackage>com.qtsurfer.api.client.invoker</invokerPackage>
                             <generateApiTests>false</generateApiTests>
                             <generateModelTests>false</generateModelTests>
                             <generateApiDocumentation>false</generateApiDocumentation>

@@ -1,10 +1,18 @@
 # Changelog
 
-All notable changes to `net.qtsurfer:api-client` are documented here.
+All notable changes to `com.qtsurfer:api-client` are documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.2.0] — 2026-05-17
+
+### Changed
+
+- Maven coordinates migrated to `com.qtsurfer:api-client` via JitPack custom domain (`git.qtsurfer.com`). Consumers should replace `com.github.QTSurfer:api-client-java:v0.1.x` with `com.qtsurfer:api-client:0.2.0`.
+- Java packages renamed from `net.qtsurfer.api.client` to `com.qtsurfer.api.client` throughout.
+- Tags no longer use the `v` prefix (e.g. `0.2.0` instead of `v0.2.0`); CI release workflow updated accordingly.
 
 ## [0.1.1] — 2026-04-15
 
