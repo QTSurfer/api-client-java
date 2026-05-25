@@ -6,11 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
-## [0.3.0] — 2026-05-25
+## [0.3.1] — 2026-05-25
 
 ### Added
 
-- `AuthApi.auth()` — exchange an API key for a short-lived JWT against `POST /auth/token` (OpenAPI spec 0.95.0). The client now ships `AuthTokenResponse` and `AuthError` models and an `apiKeyAuth` (`X-API-Key`) security scheme.
+- `AuthApi.auth()` — exchange an API key for a short-lived JWT against `POST /auth/token` (OpenAPI spec 0.95.1). The client now ships `AuthTokenResponse` and `AuthTokenError` models and an `apiKeyAuth` (`X-API-Key`) security scheme.
 - `EquityPoint` model and `ResultMap.pnlTotalPercent` / `ResultMap.equityCurve` fields, carried forward from a prior spec bump that had not been regenerated here.
 
 ### Fixed
