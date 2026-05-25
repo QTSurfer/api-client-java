@@ -41,7 +41,7 @@ Add the JitPack repository and the dependency:
 <dependency>
   <groupId>com.qtsurfer</groupId>
   <artifactId>api-client-java</artifactId>
-  <version>0.2.0</version>
+  <version>0.3.0</version>
 </dependency>
 ```
 
@@ -49,12 +49,12 @@ For Gradle:
 
 ```gradle
 repositories { maven { url 'https://jitpack.io' } }
-dependencies { implementation 'com.qtsurfer:api-client:0.2.0' }
+dependencies { implementation 'com.qtsurfer:api-client:0.3.0' }
 ```
 
 ### Via Maven Central (future)
 
-Once published to Central, the coordinate will be `com.qtsurfer:api-client:0.1.2`.
+Once published to Central, the coordinate will be `com.qtsurfer:api-client:0.3.0`.
 
 ## Quick start
 
@@ -66,18 +66,43 @@ import com.qtsurfer.api.client.model.Exchange;
 import java.util.List;
 
 ApiClient client = new ApiClient();
-client.updateBaseUri("https://api.qtsurfer.net/v1");
+client.updateBaseUri("https://api.qtsurfer.com/v1");
 client.setRequestInterceptor(builder ->
-    builder.header("Authorization", "Bearer " + System.getenv("JWT_API_TOKEN")));
+    builder.header("Authorization", "Bearer " + System.getenv("QTSURFER_TOKEN")));
 
 ExchangeApi exchanges = new ExchangeApi(client);
 List<Exchange> result = exchanges.getExchanges();
 ```
 
+### API key → JWT
+
+Every endpoint above expects a short-lived JWT in `Authorization: Bearer …`.
+Exchange a long-lived API key for one via `AuthApi.auth()`:
+
+```java
+import com.qtsurfer.api.client.api.AuthApi;
+import com.qtsurfer.api.client.invoker.ApiClient;
+import com.qtsurfer.api.client.model.AuthTokenResponse;
+
+ApiClient apikeyClient = new ApiClient();
+apikeyClient.updateBaseUri("https://api.qtsurfer.com/v1");
+apikeyClient.setRequestInterceptor(builder ->
+    builder.header("X-API-Key", System.getenv("QTSURFER_APIKEY")));
+
+AuthTokenResponse token = new AuthApi(apikeyClient).auth();
+String jwt = token.getAccessToken();  // feed to a Bearer-authed ApiClient
+```
+
+For production use, prefer the [`com.qtsurfer:sdk`](https://github.com/QTSurfer/sdk-java)
+`auth(apikey)` helper — it returns an `AuthenticatedClient` that refreshes the
+JWT transparently, reads `QTSURFER_APIKEY` from the environment, and supports
+pluggable token stores so callers don't reinvent that plumbing.
+
 ## API surface
 
 | API class | Methods |
 | --- | --- |
+| `AuthApi` | `auth()` — exchange API key for a short-lived JWT |
 | `ExchangeApi` | `getExchanges()`, `getInstruments(exchangeId)` |
 | `ExchangeBinaryDownloads` | `getTickersHour(...)`, `getKlinesHour(...)` — Lastra/Parquet streams (manual; see note below) |
 | `StrategyApi` | `postStrategy(body, xCompileAsync)`, `getStrategyStatus(strategyId)` |
@@ -110,7 +135,7 @@ The class reuses the `ApiClient`'s `HttpClient` and request interceptor, so any 
 `ApiClient` exposes the underlying `HttpClient.Builder` and an `ObjectMapper`, plus hooks for request/response interceptors.
 
 ```java
-client.updateBaseUri("https://api.qtsurfer.net/v1");
+client.updateBaseUri("https://api.qtsurfer.com/v1");
 
 client.setRequestInterceptor(builder ->
     builder.header("Authorization", "Bearer " + token)
