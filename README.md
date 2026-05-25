@@ -41,7 +41,7 @@ Add the JitPack repository and the dependency:
 <dependency>
   <groupId>com.qtsurfer</groupId>
   <artifactId>api-client-java</artifactId>
-  <version>0.2.0</version>
+  <version>0.3.0</version>
 </dependency>
 ```
 
@@ -49,12 +49,12 @@ For Gradle:
 
 ```gradle
 repositories { maven { url 'https://jitpack.io' } }
-dependencies { implementation 'com.qtsurfer:api-client:0.2.0' }
+dependencies { implementation 'com.qtsurfer:api-client:0.3.0' }
 ```
 
 ### Via Maven Central (future)
 
-Once published to Central, the coordinate will be `com.qtsurfer:api-client:0.1.2`.
+Once published to Central, the coordinate will be `com.qtsurfer:api-client:0.3.0`.
 
 ## Quick start
 
@@ -68,7 +68,7 @@ import java.util.List;
 ApiClient client = new ApiClient();
 client.updateBaseUri("https://api.qtsurfer.net/v1");
 client.setRequestInterceptor(builder ->
-    builder.header("Authorization", "Bearer " + System.getenv("JWT_API_TOKEN")));
+    builder.header("Authorization", "Bearer " + System.getenv("QTSURFER_TOKEN")));
 
 ExchangeApi exchanges = new ExchangeApi(client);
 List<Exchange> result = exchanges.getExchanges();
@@ -78,6 +78,7 @@ List<Exchange> result = exchanges.getExchanges();
 
 | API class | Methods |
 | --- | --- |
+| `AuthApi` | `auth()` — exchange API key for a short-lived JWT |
 | `ExchangeApi` | `getExchanges()`, `getInstruments(exchangeId)` |
 | `ExchangeBinaryDownloads` | `getTickersHour(...)`, `getKlinesHour(...)` — Lastra/Parquet streams (manual; see note below) |
 | `StrategyApi` | `postStrategy(body, xCompileAsync)`, `getStrategyStatus(strategyId)` |
