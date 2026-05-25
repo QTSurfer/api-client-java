@@ -66,7 +66,7 @@ import com.qtsurfer.api.client.model.Exchange;
 import java.util.List;
 
 ApiClient client = new ApiClient();
-client.updateBaseUri("https://api.qtsurfer.net/v1");
+client.updateBaseUri("https://api.qtsurfer.com/v1");
 client.setRequestInterceptor(builder ->
     builder.header("Authorization", "Bearer " + System.getenv("QTSURFER_TOKEN")));
 
@@ -85,7 +85,7 @@ import com.qtsurfer.api.client.invoker.ApiClient;
 import com.qtsurfer.api.client.model.AuthTokenResponse;
 
 ApiClient apikeyClient = new ApiClient();
-apikeyClient.updateBaseUri("https://api.qtsurfer.net/v1");
+apikeyClient.updateBaseUri("https://api.qtsurfer.com/v1");
 apikeyClient.setRequestInterceptor(builder ->
     builder.header("X-API-Key", System.getenv("QTSURFER_APIKEY")));
 
@@ -135,7 +135,7 @@ The class reuses the `ApiClient`'s `HttpClient` and request interceptor, so any 
 `ApiClient` exposes the underlying `HttpClient.Builder` and an `ObjectMapper`, plus hooks for request/response interceptors.
 
 ```java
-client.updateBaseUri("https://api.qtsurfer.net/v1");
+client.updateBaseUri("https://api.qtsurfer.com/v1");
 
 client.setRequestInterceptor(builder ->
     builder.header("Authorization", "Bearer " + token)
