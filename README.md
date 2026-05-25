@@ -74,6 +74,30 @@ ExchangeApi exchanges = new ExchangeApi(client);
 List<Exchange> result = exchanges.getExchanges();
 ```
 
+### API key → JWT
+
+Every endpoint above expects a short-lived JWT in `Authorization: Bearer …`.
+Exchange a long-lived API key for one via `AuthApi.auth()`:
+
+```java
+import com.qtsurfer.api.client.api.AuthApi;
+import com.qtsurfer.api.client.invoker.ApiClient;
+import com.qtsurfer.api.client.model.AuthTokenResponse;
+
+ApiClient apikeyClient = new ApiClient();
+apikeyClient.updateBaseUri("https://api.qtsurfer.net/v1");
+apikeyClient.setRequestInterceptor(builder ->
+    builder.header("X-API-Key", System.getenv("QTSURFER_APIKEY")));
+
+AuthTokenResponse token = new AuthApi(apikeyClient).auth();
+String jwt = token.getAccessToken();  // feed to a Bearer-authed ApiClient
+```
+
+For production use, prefer the [`com.qtsurfer:sdk`](https://github.com/QTSurfer/sdk-java)
+`auth(apikey)` helper — it returns an `AuthenticatedClient` that refreshes the
+JWT transparently, reads `QTSURFER_APIKEY` from the environment, and supports
+pluggable token stores so callers don't reinvent that plumbing.
+
 ## API surface
 
 | API class | Methods |
