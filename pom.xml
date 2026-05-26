@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.qtsurfer</groupId>
-    <artifactId>api-client</artifactId>
+    <artifactId>api-client-java</artifactId>
     <version>0.3.1</version>
     <packaging>jar</packaging>
 
