@@ -41,7 +41,7 @@ Add the JitPack repository and the dependency:
 <dependency>
   <groupId>com.qtsurfer</groupId>
   <artifactId>api-client-java</artifactId>
-  <version>0.3.0</version>
+  <version>x.x.x</version>
 </dependency>
 ```
 
@@ -49,12 +49,12 @@ For Gradle:
 
 ```gradle
 repositories { maven { url 'https://jitpack.io' } }
-dependencies { implementation 'com.qtsurfer:api-client-java:0.3.1' }
+dependencies { implementation 'com.qtsurfer:api-client-java:x.x.x' }
 ```
 
 ### Via Maven Central (future)
 
-Once published to Central, the coordinate will be `com.qtsurfer:api-client-java:0.3.1`.
+Once published to Central, the coordinate will be `com.qtsurfer:api-client-java:x.x.x`.
 
 ## Quick start
 
