@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.4.0] — 2026-07-10
+
+### Changed 🔄
+
+- `ExchangeApi.getInstruments(exchangeId)` now returns an `InstrumentListResponse` HAL envelope (`data`, `meta`, `links`) instead of a bare `List<InstrumentDetail>`, matching OpenAPI spec 0.97.0. `data` still carries the `List<InstrumentDetail>`, `meta` carries `updatedAt`/`exchange`/`segment` (`InstrumentListMeta`), and `links` carries `self`/`spot`/`futures` HAL links (`InstrumentLinks`, `HalLink`).
+- `InstrumentDetail` no longer has flat `dataFrom`/`dataTo` fields. Data availability now lives under `coverage` (`InstrumentCoverage`), with a `CoverageWindow` (`from`, `to`, optional `inactiveSince`) per data type — `tickers` and `klines`.
+
+### Added ✨
+
+- `ExchangeApi.getSegmentInstruments(exchangeId, segment)` — `GET /exchange/{exchangeId}/{segment}/instruments`, returning the same `InstrumentListResponse` envelope scoped to `spot` or `futures`.
+
+### Fixed 🐛
+
+- Bumped `openapi-generator-maven-plugin` `7.11.0` → `7.14.0`. On 7.11.0 the OpenAPI 3.1 parser inlined the `$ref` array items of `InstrumentListResponse.data`, so the generator synthesized a duplicate `InstrumentListResponseDataInner` model and `getData()` returned `List<InstrumentListResponseDataInner>` instead of `List<InstrumentDetail>`. 7.14.0 resolves the `$ref` correctly, so the envelope reuses the canonical `InstrumentDetail` / `InstrumentCoverage` / `CoverageWindow` / `HalLink` models.
+
 ## [0.3.1] — 2026-05-25
 
 ### Added

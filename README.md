@@ -103,12 +103,14 @@ pluggable token stores so callers don't reinvent that plumbing.
 | API class | Methods |
 | --- | --- |
 | `AuthApi` | `auth()` — exchange API key for a short-lived JWT |
-| `ExchangeApi` | `getExchanges()`, `getInstruments(exchangeId)` |
+| `ExchangeApi` | `getExchanges()`, `getInstruments(exchangeId)`, `getSegmentInstruments(exchangeId, segment)` |
 | `ExchangeBinaryDownloads` | `getTickersHour(...)`, `getKlinesHour(...)` — Lastra/Parquet streams (manual; see note below) |
 | `StrategyApi` | `postStrategy(body, xCompileAsync)`, `getStrategyStatus(strategyId)` |
 | `BacktestingApi` | `prepareBacktesting`, `getPreparationStatus`, `executeBacktesting`, `cancelExecution`, `getExecutionResult` |
 
-All generated model types (`Exchange`, `InstrumentDetail`, `JobState`, `BacktestJobResult`, `ResultMap`, `ResponseError`, …) live under `com.qtsurfer.api.client.model`.
+`getInstruments` and `getSegmentInstruments` both return an `InstrumentListResponse` HAL envelope: `data` (`List<InstrumentDetail>`), `meta` (`InstrumentListMeta`), `links` (`InstrumentLinks`). Each `InstrumentDetail` exposes data coverage per data type via `coverage` (`InstrumentCoverage` → `tickers`/`klines` `CoverageWindow`, each with `from`/`to`/`inactiveSince`) instead of the old flat `dataFrom`/`dataTo` fields.
+
+All generated model types (`Exchange`, `InstrumentDetail`, `InstrumentListResponse`, `InstrumentCoverage`, `CoverageWindow`, `JobState`, `BacktestJobResult`, `ResultMap`, `ResponseError`, …) live under `com.qtsurfer.api.client.model`.
 
 ### Binary downloads (`/exchange/{ex}/tickers|klines/{base}/{quote}`)
 
