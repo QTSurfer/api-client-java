@@ -110,7 +110,9 @@ pluggable token stores so callers don't reinvent that plumbing.
 
 `getInstruments` and `getSegmentInstruments` both return an `InstrumentListResponse` HAL envelope: `data` (`List<InstrumentDetail>`), `meta` (`InstrumentListMeta`), `links` (`InstrumentLinks`). Each `InstrumentDetail` exposes data coverage per data type via `coverage` (`InstrumentCoverage` → `tickers`/`klines` `CoverageWindow`, each with `from`/`to`/`inactiveSince`) instead of the old flat `dataFrom`/`dataTo` fields.
 
-All generated model types (`Exchange`, `InstrumentDetail`, `InstrumentListResponse`, `InstrumentCoverage`, `CoverageWindow`, `JobState`, `BacktestJobResult`, `ResultMap`, `ResponseError`, …) live under `com.qtsurfer.api.client.model`.
+All generated model types (`Exchange`, `InstrumentDetail`, `InstrumentListResponse`, `InstrumentCoverage`, `CoverageWindow`, `JobState`, `PrepareJobState`, `BacktestJobResult`, `ResultMap`, `ResponseError`, …) live under `com.qtsurfer.api.client.model`.
+
+`BacktestingApi.getPreparationStatus(exchangeId, type, jobId)` returns `PrepareJobState`: the standard job status fields plus `coverageRatio`, `totalHours`, `hoursWithData`, and `hoursWithoutData` (per-hour `rationale`: `pending_conversion` / `low_activity` / `unknown`).
 
 ### Binary downloads (`/exchange/{ex}/tickers|klines/{base}/{quote}`)
 

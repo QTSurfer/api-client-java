@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.5.0] — 2026-07-11
+
+### Changed 🔄
+
+- `BacktestingApi.getPreparationStatus(exchangeId, type, jobId)` now returns `PrepareJobState` instead of `JobState`, matching OpenAPI spec 0.98.0. `PrepareJobState` is generated as a standalone class (it does not extend `JobState`) that duplicates the `JobState` fields (`contextId`, `status`, `statusDetail`, `size`, `completed`, `startTime`, `endTime`, `dataFrom`, `dataTo`) and adds `coverageRatio` (`hoursWithData / totalHours` in `[0,1]`), `totalHours`, `hoursWithData`, and `hoursWithoutData` — a `List<PrepareJobStateAllOfHoursWithoutData>`, each with `hour`, `expected`, and a `rationale` enum (`PENDING_CONVERSION`, `LOW_ACTIVITY`, `UNKNOWN`).
+- `JobState.StatusEnum` no longer has a `PARTIAL` value. Remaining values: `NEW`, `STARTED`, `COMPLETED`, `ABORTED`, `FAILED`.
+
+### Added ✨
+
+- `PrepareJobState` and `PrepareJobStateAllOfHoursWithoutData` generated models, carrying the per-hour data-coverage summary returned by `getPreparationStatus` for single-instrument prepare jobs.
+
 ## [0.4.0] — 2026-07-10
 
 ### Changed 🔄
