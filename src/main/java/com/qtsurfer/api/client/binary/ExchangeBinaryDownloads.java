@@ -18,7 +18,7 @@ import java.util.function.Consumer;
  * Streaming downloads for the binary endpoints
  * {@code GET /exchange/{ex}/tickers/{base}/{quote}} and {@code GET /exchange/{ex}/klines/{base}/{quote}}.
  *
- * <p>The auto-generated {@code ExchangeApi#getExchangeTickersHour} and {@code getExchangeKlinesHour}
+ * <p>The auto-generated {@code ExchangeApi#downloadTickers} and {@code downloadKlines}
  * methods are unusable for binary payloads: openapi-generator's {@code native} library decodes the
  * body as a UTF-8 string and feeds it to Jackson, which corrupts {@code application/vnd.lastra}
  * and {@code application/vnd.apache.parquet} bytes. This class is the manual escape hatch — it

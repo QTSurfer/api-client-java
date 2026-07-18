@@ -71,13 +71,13 @@ client.setRequestInterceptor(builder ->
     builder.header("Authorization", "Bearer " + System.getenv("QTSURFER_TOKEN")));
 
 ExchangeApi exchanges = new ExchangeApi(client);
-List<Exchange> result = exchanges.getExchanges();
+List<Exchange> result = exchanges.listExchanges();
 ```
 
 ### API key → JWT
 
 Every endpoint above expects a short-lived JWT in `Authorization: Bearer …`.
-Exchange a long-lived API key for one via `AuthApi.auth()`:
+Exchange a long-lived API key for one via `AuthApi.authenticate()`:
 
 ```java
 import com.qtsurfer.api.client.api.AuthApi;
@@ -89,12 +89,12 @@ apikeyClient.updateBaseUri("https://api.qtsurfer.com/v1");
 apikeyClient.setRequestInterceptor(builder ->
     builder.header("X-API-Key", System.getenv("QTSURFER_APIKEY")));
 
-AuthTokenResponse token = new AuthApi(apikeyClient).auth();
+AuthTokenResponse token = new AuthApi(apikeyClient).authenticate();
 String jwt = token.getAccessToken();  // feed to a Bearer-authed ApiClient
 ```
 
 For production use, prefer the [`com.qtsurfer:sdk`](https://github.com/QTSurfer/sdk-java)
-`auth(apikey)` helper — it returns an `AuthenticatedClient` that refreshes the
+`authenticate(apikey)` helper — it returns an `AuthenticatedClient` that refreshes the
 JWT transparently, reads `QTSURFER_APIKEY` from the environment, and supports
 pluggable token stores so callers don't reinvent that plumbing.
 
@@ -102,21 +102,21 @@ pluggable token stores so callers don't reinvent that plumbing.
 
 | API class | Methods |
 | --- | --- |
-| `AuthApi` | `auth()` — exchange API key for a short-lived JWT |
-| `ExchangeApi` | `getExchanges()`, `getInstruments(exchangeId)`, `getSegmentInstruments(exchangeId, segment)` |
+| `AuthApi` | `authenticate()` — exchange API key for a short-lived JWT |
+| `ExchangeApi` | `listExchanges()`, `listInstruments(exchangeId)`, `listSegmentInstruments(exchangeId, segment)` |
 | `ExchangeBinaryDownloads` | `getTickersHour(...)`, `getKlinesHour(...)` — Lastra/Parquet streams (manual; see note below) |
-| `StrategyApi` | `postStrategy(body, xCompileAsync)`, `getStrategyStatus(strategyId)` |
-| `BacktestingApi` | `prepareBacktesting`, `getPreparationStatus`, `executeBacktesting`, `cancelExecution`, `getExecutionResult` |
+| `StrategyApi` | `compileStrategy(body, xCompileAsync)`, `getStrategy(strategyId)` |
+| `BacktestingApi` | `prepareBacktest`, `getPrepareStatus`, `executeBacktest`, `cancelBacktest`, `getBacktestResult`, `executeSweep`, `getSweepResult`, `cancelSweep` |
 
-`getInstruments` and `getSegmentInstruments` both return an `InstrumentListResponse` HAL envelope: `data` (`List<InstrumentDetail>`), `meta` (`InstrumentListMeta`), `links` (`InstrumentLinks`). Each `InstrumentDetail` exposes data coverage per data type via `coverage` (`InstrumentCoverage` → `tickers`/`klines` `CoverageWindow`, each with `from`/`to`/`inactiveSince`) instead of the old flat `dataFrom`/`dataTo` fields.
+`listInstruments` and `listSegmentInstruments` both return an `InstrumentListResponse` HAL envelope: `data` (`List<InstrumentDetail>`), `meta` (`InstrumentListMeta`), `links` (`InstrumentLinks`). Each `InstrumentDetail` exposes data coverage per data type via `coverage` (`InstrumentCoverage` → `tickers`/`klines` `CoverageWindow`, each with `from`/`to`/`inactiveSince`) instead of the old flat `dataFrom`/`dataTo` fields.
 
 All generated model types (`Exchange`, `InstrumentDetail`, `InstrumentListResponse`, `InstrumentCoverage`, `CoverageWindow`, `JobState`, `PrepareJobState`, `BacktestJobResult`, `ResultMap`, `ResponseError`, …) live under `com.qtsurfer.api.client.model`.
 
-`BacktestingApi.getPreparationStatus(exchangeId, type, jobId)` returns `PrepareJobState`: the standard job status fields plus `coverageRatio`, `totalHours`, `hoursWithData`, and `hoursWithoutData` (per-hour `rationale`: `pending_conversion` / `low_activity` / `unknown`).
+`BacktestingApi.getPrepareStatus(exchangeId, type, jobId)` returns `PrepareJobState`: the standard job status fields plus `coverageRatio`, `totalHours`, `hoursWithData`, and `hoursWithoutData` (per-hour `rationale`: `pending_conversion` / `low_activity` / `unknown`).
 
 ### Binary downloads (`/exchange/{ex}/tickers|klines/{base}/{quote}`)
 
-These endpoints return raw [Lastra](https://github.com/QTSurfer/lastra-java) bytes (default) or Parquet (`format=parquet`). The auto-generated `ExchangeApi.getExchangeTickersHour` / `getExchangeKlinesHour` methods are unusable for binary payloads — openapi-generator's `native` library decodes the body as UTF-8 and feeds it to Jackson, which corrupts the bytes. Use `ExchangeBinaryDownloads` instead:
+These endpoints return raw [Lastra](https://github.com/QTSurfer/lastra-java) bytes (default) or Parquet (`format=parquet`). The auto-generated `ExchangeApi.downloadTickers` / `downloadKlines` methods are unusable for binary payloads — openapi-generator's `native` library decodes the body as UTF-8 and feeds it to Jackson, which corrupts the bytes. Use `ExchangeBinaryDownloads` instead:
 
 ```java
 import com.qtsurfer.api.client.binary.ExchangeBinaryDownloads;

@@ -6,6 +6,40 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.6.0] — 2026-07-18
+
+### Changed 🔄
+
+- Regenerated against OpenAPI spec `0.99.1`, which renames 16 operationIds — no request/response shape, field, or endpoint changes. Generated method names follow the operationId 1:1, so every renamed operation gets a new method name:
+
+  | Old method | New method |
+  | --- | --- |
+  | `AuthApi.auth()` | `AuthApi.authenticate()` |
+  | `ExchangeApi.getExchanges()` | `ExchangeApi.listExchanges()` |
+  | `ExchangeApi.getInstruments()` | `ExchangeApi.listInstruments()` |
+  | `ExchangeApi.getSegmentInstruments()` | `ExchangeApi.listSegmentInstruments()` |
+  | `ExchangeApi.getExchangeTickersHour()` | `ExchangeApi.downloadTickers()` |
+  | `ExchangeApi.getExchangeKlinesHour()` | `ExchangeApi.downloadKlines()` |
+  | `StrategyApi.postStrategy()` | `StrategyApi.compileStrategy()` |
+  | `StrategyApi.getStrategyStatus()` | `StrategyApi.getStrategy()` |
+  | `BacktestingApi.prepareBacktesting()` | `BacktestingApi.prepareBacktest()` |
+  | `BacktestingApi.getPreparationStatus()` | `BacktestingApi.getPrepareStatus()` |
+  | `BacktestingApi.executeSweepBacktesting()` | `BacktestingApi.executeSweep()` |
+  | `BacktestingApi.getExecuteSweepResult()` | `BacktestingApi.getSweepResult()` |
+  | `BacktestingApi.cancelExecuteSweep()` | `BacktestingApi.cancelSweep()` |
+  | `BacktestingApi.executeBacktesting()` | `BacktestingApi.executeBacktest()` |
+  | `BacktestingApi.cancelExecution()` | `BacktestingApi.cancelBacktest()` |
+  | `BacktestingApi.getExecutionResult()` | `BacktestingApi.getBacktestResult()` |
+
+  The `BacktestingApi` sweep contract (`executeSweep` / `getSweepResult` / `cancelSweep`) is now documented in the README's API surface table — it was generated previously too (under the old names) but had not been called out there.
+
+- As a byproduct of the operationId renames, openapi-generator's synthesized names for inline (non-`$ref`) request/response schemas also changed, since those names are derived from the operationId. Field-for-field these types are unchanged from the prior version — only the class name moved:
+  - `CancelExecution200Response` → `CancelBacktest200Response`
+  - `GetStrategyStatus200Response` → `GetStrategy200Response`
+  - `PostStrategy200Response` → `CompileStrategy200Response`
+  - `PrepareBacktestingRequest` → `PrepareRequest`
+  - `ExecuteBacktestingRequest` → `ExecuteBacktestRequest`
+
 ## [0.5.0] — 2026-07-11
 
 ### Changed 🔄
