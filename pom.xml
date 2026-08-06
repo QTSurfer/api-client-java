@@ -172,8 +172,14 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>${maven.javadoc.plugin.version}</version>
                 <configuration>
-                    <doclint>none</doclint>
-                    <failOnError>false</failOnError>
+                    <!--
+                        Checks everything javadoc can check except the presence of a comment.
+                        Note what this actually gates: these sources are generated, and their
+                        doc comments come from the spec descriptions, so a failure here is a
+                        defect in qtsurfer-api openapi.yaml, not something to fix in this repo.
+                    -->
+                    <doclint>all,-missing</doclint>
+                    <failOnError>true</failOnError>
                     <sourcepath>${generated.sources.dir}/src/main/java</sourcepath>
                 </configuration>
                 <executions>
