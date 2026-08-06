@@ -105,7 +105,7 @@ pluggable token stores so callers don't reinvent that plumbing.
 | `AuthApi` | `authenticate()` — exchange API key for a short-lived JWT |
 | `ExchangeApi` | `listExchanges()`, `listInstruments(exchangeId)`, `listSegmentInstruments(exchangeId, segment)` |
 | `ExchangeBinaryDownloads` | `getTickersHour(...)`, `getKlinesHour(...)` — Lastra/Parquet streams (manual; see note below) |
-| `StrategyApi` | `compileStrategy(body, xCompileAsync)`, `getStrategy(strategyId)` |
+| `StrategyApi` | `compileStrategy(body)`, `validateStrategy(strategyId)`, `getStrategy(strategyId)` |
 | `BacktestingApi` | `prepareBacktest`, `getPrepareStatus`, `executeBacktest`, `cancelBacktest`, `getBacktestResult`, `executeSweep`, `getSweepResult`, `cancelSweep` |
 
 `listInstruments` and `listSegmentInstruments` both return an `InstrumentListResponse` HAL envelope: `data` (`List<InstrumentDetail>`), `meta` (`InstrumentListMeta`), `links` (`InstrumentLinks`). Each `InstrumentDetail` exposes data coverage per data type via `coverage` (`InstrumentCoverage` → `tickers`/`klines` `CoverageWindow`, each with `from`/`to`/`inactiveSince`) instead of the old flat `dataFrom`/`dataTo` fields.

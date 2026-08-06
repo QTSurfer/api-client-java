@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.7.0] — 2026-08-06
+
+### Changed 🔄
+
+- `StrategyApi.compileStrategy(body)` is now always synchronous, matching OpenAPI spec `0.102.0`. The async compile path is gone entirely: there is no more `X-Compile-Async` header parameter and no `202`/job-polling branch. `200` returns `CompileStrategy200Response` (`{strategyId}`, unchanged shape), `400` is a compile error, and a new `429` means too many compilations in flight — retry later.
+- `StrategyApi.getStrategy(strategyId)` now returns `StrategyState` instead of the old `GetStrategy200Response` (`{jobId, status: New|Started|Completed|Aborted|Failed, strategyId, statusDetail}`). `StrategyState` carries `strategyId`, `validation` (generated enum `NOT_VALIDATED` / `PENDING` / `PASSED` / `FAILED`, wire values `not_validated` / `pending` / `passed` / `failed`), `compiledAt`, `requiredSources` (`TICKER` / `K_LINE` / `FUNDING_RATE`), `validatedAt`, `detail`, `notices`, `noticesTruncated`, `dryRunIncomplete`, and `validationStalled`.
+- `ResultMap` (returned by `BacktestJobResult.getResults()`) gains optional `notices` (`List<Notice>`) and `noticesTruncated`, the same diagnostics shape now also carried on `StrategyState`.
+
+### Added ✨
+
+- `StrategyApi.validateStrategy(strategyId)` — `POST /strategy/{strategyId}/validate`. Idempotent: `200` returns the already-recorded `StrategyState` verdict, `202` means a check was just queued (poll `getStrategy` until `validation` leaves `pending`), `404` if the strategy is not registered.
+- `Notice` — the engine-diagnostic shape (`level`, `code`, `message`, `provenance`: `EXECUTE` / `COMPILE_DRY_RUN`) now carried by both `StrategyState.notices` and `ResultMap.notices`.
+
 ## [0.6.0] — 2026-07-18
 
 ### Changed 🔄
