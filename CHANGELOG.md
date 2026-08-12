@@ -6,6 +6,50 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.8.0] — 2026-08-12
+
+Regenerated against OpenAPI spec `0.106.0`, which adds walk-forward validation and sensitivity
+analysis to sweeps. Purely additive: no existing field, method, or type was renamed or removed.
+
+### Added ✨
+
+- `BacktestingApi.executeSweep(...)` accepts an optional `walkForward` (`WalkForwardRequest`:
+  `folds`, `inSamplePct`) on the request body. Submitting it runs the sweep as walk-forward
+  validation instead of a flat parameter sweep. `ExecuteSweepAccepted` gains a matching optional
+  `walkForward` (`WalkForwardAccepted`: `folds`, `inSamplePct`, `totalRuns`) confirming the fold
+  plan the moment the sweep is accepted — before any fold has finished, so it's safe to branch on
+  while polling for whether a sweep is walk-forward or not.
+- `BacktestingApi.getSweepResult(...)` response (`ExecuteSweepResult`) gains an optional
+  `walkForward` (`WalkForwardResult`: `folds`, `inSamplePct`, `completedFolds`, `paramDrift`,
+  `results` — a `List<WalkForwardFold>`). When present, the leaderboard is one row per completed
+  fold (that fold's out-of-sample winner, with `runIx` carrying the fold index rather than a grid
+  position) instead of one row per parameter point. `ranking` is always `raw` and no plateau, DSR,
+  or PBO figure is reported for a walk-forward sweep — the out-of-sample scores are already the
+  honest number.
+- New endpoint `BacktestingApi.getSweepSensitivity(exchangeId, type, requestId, sweepId, objective)`
+  — `GET .../executeSweep/{requestId}/{sweepId}/sensitivity` — returns `SweepSensitivity`
+  (`sweepId`, `status`, `objective`, `rowsAnalysed`, `marginals`: `List<SweepMarginal>`,
+  `heatmaps`: `List<SweepHeatmap>`, `heatmapsTruncated`) or a `404` `ResponseError` if the sweep
+  is unknown or expired. Aggregated from the sweep's stored rows — no re-run, works on a sweep
+  still in flight.
+- `ExecuteSweepResult` gains `pbo` and `pboSplits` — probability-of-backtest-overfitting figures
+  computed over the sweep's stored rows, present only for a non-walk-forward sweep.
+- `SweepRunRow` gains optional `plateauScore`, `neighbourCount`, `deflatedSharpe`.
+- `SweepProgress` gains `stalledSeconds` and `etaSeconds` (both optional).
+
+### Changed 🔄
+
+- `BacktestingApi.getSweepResult(...)` gains a `ranking` query parameter (`plateau` | `raw`,
+  default `plateau`). This changes the *default* ordering of the existing `ranked` view: it now
+  sorts by plateau score (the objective of the worst run in a parameter point's neighbourhood)
+  rather than the raw objective, so a spike that doesn't survive a small parameter move no longer
+  ranks first by default. The `ranked` view's rows and the `order=natural` view are otherwise
+  unchanged; pass `ranking=raw` to get the old ordering. `ExecuteSweepResult` gains a `ranking`
+  field reporting which ordering was actually used.
+- `SweepProgress` gains three new **required** fields: `failedShards`, `retrying`, `notStarted`.
+  Any hand-written code that constructs a `SweepProgress` (none exists in this repo today) would
+  need to supply them.
+
 ## [0.7.0] — 2026-08-06
 
 ### Changed 🔄
