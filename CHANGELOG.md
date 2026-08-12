@@ -6,6 +6,33 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.9.0] — 2026-08-12
+
+Regenerated against OpenAPI spec `0.107.0`. Additive for every working caller: one new optional
+field on a sweep result, and one model that no method ever returned disappears.
+
+### Added ✨
+
+- `ExecuteSweepResult` gains an optional `failReason` (`getFailReason()`) — why a sweep produced
+  less than it should have, as reported by the **first** shard to fail. The backend has always sent
+  it; it was simply never declared, so the generated client dropped it silently. It is what turns a
+  `PARTIAL` sweep with `done: 0` into an answer instead of a mystery: the strategy may have failed
+  to load at all, and until now the response said only that nothing finished. First failure wins
+  and later ones are not recorded, so on a sweep where several shards failed for different reasons
+  this names one of them rather than all — read it together with `progress.failedShards` rather
+  than as a count of anything. Absent on a healthy sweep.
+
+### Removed 🗑️
+
+- `ValidateStrategy202Response` is gone. The `202` on `StrategyApi.validateStrategy(strategyId)`
+  now refs `StrategyState` in the spec instead of carrying an anonymous inline schema, so the
+  generator no longer emits a separate model for it. This breaks no working code: no method ever
+  returned that type — `validateStrategy` already returned `StrategyState` for both `200` and
+  `202` — so it was unreachable from the client's own API surface. The `202` body is unchanged on
+  the wire (`strategyId` plus `validation: pending`); as before, it is the status code and not the
+  body that tells the two responses apart, since a `200` can also carry `validation: pending` left
+  by a check an earlier call queued.
+
 ## [0.8.0] — 2026-08-12
 
 Regenerated against OpenAPI spec `0.106.0`, which adds walk-forward validation and sensitivity
