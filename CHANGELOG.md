@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.10.1] — 2026-08-20
+
+Regenerated against OpenAPI spec `0.109.2`. Pure rename, wire format unchanged.
+
+### Changed 🔄
+
+- `StrategyApi.listStrategies()`'s `getStrategies()` now returns `List<StrategySummary>` instead of
+  `List<ListStrategies200ResponseStrategiesInner>`. The spec's `/strategies` response previously
+  described its array item as an inline anonymous schema, so the generator minted a path-derived
+  name for it; naming it `StrategySummary` in the spec is what changed, not the JSON on the wire.
+
 ## [0.10.0] — 2026-08-20
 
 Regenerated against OpenAPI spec `0.109.1`. Additive for every working caller: three new
