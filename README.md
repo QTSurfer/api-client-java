@@ -106,10 +106,16 @@ pluggable token stores so callers don't reinvent that plumbing.
 | `AuthApi` | `authenticate()` — exchange API key for a short-lived JWT |
 | `ExchangeApi` | `listExchanges()`, `listInstruments(exchangeId)`, `listSegmentInstruments(exchangeId, segment)` |
 | `ExchangeBinaryDownloads` | `getTickersHour(...)`, `getKlinesHour(...)` — Lastra/Parquet streams (manual; see note below) |
-| `StrategyApi` | `compileStrategy(body)`, `validateStrategy(strategyId)`, `getStrategy(strategyId)` |
+| `StrategyApi` | `compileStrategy(body)`, `validateStrategy(strategyId)`, `getStrategy(strategyId)`, `listStrategies()`, `deleteStrategy(strategyId)`, `getStrategyCode(strategyId)` |
 | `BacktestingApi` | `prepareBacktest`, `getPrepareStatus`, `executeBacktest`, `cancelBacktest`, `getBacktestResult`, `executeSweep`, `getSweepResult`, `cancelSweep`, `getSweepSensitivity` |
 
 `listInstruments` and `listSegmentInstruments` both return an `InstrumentListResponse` HAL envelope: `data` (`List<InstrumentDetail>`), `meta` (`InstrumentListMeta`), `links` (`InstrumentLinks`). Each `InstrumentDetail` exposes data coverage per data type via `coverage` (`InstrumentCoverage` → `tickers`/`klines` `CoverageWindow`, each with `from`/`to`/`inactiveSince`) instead of the old flat `dataFrom`/`dataTo` fields.
+
+`getStrategy(...)` and `validateStrategy(...)`'s already-validated `200` response carry an optional
+`links` (`StrategyLinks` → `code`: `HalLink`, `.../strategy/{strategyId}/code`) pointing at
+`getStrategyCode(strategyId)`; that same endpoint's `202` (a check still pending) omits it. Following
+the link can still 404 — a strategy resolved only through a shared/marketplace reference carries no
+source of its own, and that reads the same as an id never registered.
 
 `BacktestingApi.executeSweep(...)` accepts an optional `walkForward` (`WalkForwardRequest`) to run the sweep as walk-forward validation instead of a flat parameter sweep; `BacktestingApi.getSweepResult(...)` accepts an optional `ranking` query param (`plateau` default, or `raw`) controlling how its `ranked` view is ordered; `BacktestingApi.getSweepSensitivity(...)` returns marginal/heatmap aggregates over a sweep's stored rows.
 

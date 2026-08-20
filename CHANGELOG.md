@@ -6,6 +6,42 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.10.0] — 2026-08-20
+
+Regenerated against OpenAPI spec `0.109.1`. Additive for every working caller: three new
+operations, one new named model, and the default base URI a no-arg `ApiClient()` starts from.
+
+### Added ✨
+
+- `StrategyApi.listStrategies()` → `ListStrategies200Response` (`getStrategies()`:
+  `List<ListStrategies200ResponseStrategiesInner>`, each carrying `strategyId`, an optional
+  `compiledAt`, and an optional `requiredSources`) — every strategy the caller has registered and
+  not deleted, most recently compiled first. Deliberately cheaper than reading each strategy: it
+  does not carry validation state, so check that per strategy via `StrategyApi.getStrategy(...)`.
+  Never a `404` — an empty list when the caller has none.
+- `StrategyApi.deleteStrategy(strategyId)` → `DeleteStrategy200Response` (`getStrategyId()`,
+  `getDeleted()` — always `true`). Removes a strategy from both `getStrategy(...)` and
+  `listStrategies()`. `404` (`ResponseError`) when no such registered strategy exists for the
+  caller.
+- `StrategyApi.getStrategyCode(strategyId)` → `GetStrategyCode200Response` (`getStrategyId()`,
+  `getCode()`) — the exact source last submitted for this id. `404` (`ResponseError`) both when
+  the id was never registered by the caller and when it resolves only through a shared/marketplace
+  reference that carries no source of its own — the spec keeps those two cases deliberately
+  indistinguishable.
+- New model `StrategyLinks` (`getCode()` → `HalLink`), generated as its own named class rather
+  than inlined into its container. Wired in as an optional `StrategyState.getLinks()`: present on
+  a full `StrategyState` body (`getStrategy(...)`, and `validateStrategy(...)`'s
+  already-validated `200`), absent from that same endpoint's `202` — a deliberately partial stub.
+
+### Changed 🔄
+
+- `ApiClient.getDefaultBaseUri()` — what a no-arg `new ApiClient()` (or `new ApiClient(builder,
+  mapper, null)`) resolves its base URI to — is now `https://api.qtsurfer.net/v1`. The spec's
+  `servers` block only renamed its staging entry to the host it was already actually serving
+  (`https://api.staging.qtsurfer.com` never served this API), so this is not a new destination —
+  it is the same live host under its real name. Any caller who calls `updateBaseUri(...)`
+  explicitly, as this client's own README examples do, is unaffected.
+
 ## [0.9.0] — 2026-08-12
 
 Regenerated against OpenAPI spec `0.107.0`. Additive for every working caller: one new optional
