@@ -6,6 +6,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.11.0] — 2026-08-25
+
+Regenerated against OpenAPI spec `0.110.1`. Additive: a new Dataset feature (upload your own
+ticker data and backtest against it) plus dataset support on the existing prepare operation.
+
+### Added ✨
+
+- `DatasetApi` — six new operations: `createDataset(CreateDatasetRequest)` → `DatasetCreated`,
+  `listDatasets()` → `ListDatasets200Response` (`getDatasets()`: `List<Dataset>`),
+  `getDataset(datasetId)` → `DatasetWithLinks`, `deleteDataset(datasetId)` →
+  `DeleteDataset200Response`, `finalizeDatasetUpload(datasetId, uploadId)` →
+  `FinalizeDatasetUpload202Response`, `getDatasetUpload(datasetId, uploadId)` →
+  `DatasetUploadState`. New models: `Dataset`, `DatasetWithLinks`, `DatasetCreated`,
+  `DatasetVersion`, `DatasetUploadState`.
+- `PrepareRequest.datasetId` / `PrepareRequest.datasetVersionId` (both optional strings) — send
+  `datasetId` instead of `instrument` when preparing against the reserved `exchangeId: user` value.
+- `PrepareJobState.cadence` / `PrepareJobState.gaps` / `PrepareJobState.largestGapSteps` — coverage
+  detail populated only for a dataset-backed prepare; `totalHours`/`hoursWithData`/
+  `hoursWithoutData` remain exchange-only.
+- `PrepareRequest.cadence` accepts seven new values: `3m`, `30m`, `2h`, `8h`, `12h`, `1w`, `1q`
+  (previously `1s, 5s, 1m, 5m, 15m, 1h, 4h, 1d`).
+
+### Changed 🔄
+
+- `PrepareRequest.instrument` is no longer required (`required` shrank to `[from, to]`); the
+  generated field and builder method are unchanged in type (`String`), since the spec's
+  `Instrument` schema is itself a string alias, not an object — so this is a nullability change,
+  not a shape change.
+
 ## [0.10.1] — 2026-08-20
 
 Regenerated against OpenAPI spec `0.109.2`. Pure rename, wire format unchanged.
