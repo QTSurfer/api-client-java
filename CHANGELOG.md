@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.12.0] — 2026-08-27
+
+Regenerated against OpenAPI spec `0.110.3`.
+
+### Added ✨
+
+- `BacktestingApi.getSweepRunEquityCurve(exchangeId, type, requestId, sweepId, runIx, outMode, resample, differential)` → `EquityCurveResult` reads a retained sweep trial curve with optional output shaping.
+- `CompileStrategy200Response.getDeclaredProperties()` → `List<DeclaredProperty>` reports the strategy properties discovered during compilation.
+- `ExecuteBacktestRequest.equityCurve` (`EquityCurveOptions`) and `ExecuteSweepRequest.equityCurve` (`EquityCurveRequest`) configure curve shaping and, for sweeps, retention.
+- `ExecuteSweepResult.state` exposes the platform `JobState`, while each `SweepRunRow` may carry a retained `EquityCurveResult` pointer.
+
+### Changed 🔄
+
+- `ResultMap.getEquityCurve()` now returns `EquityCurveResult` instead of `List<EquityPoint>`. Read inline points from `getPoints()` for `ARRAY` output or parallel `getTimestamps()` / `getEquities()` for `SHORT`; inspect `getMeta()` for the shape actually served.
+- `Dataset` and `DatasetWithLinks` gain optional `from`, `to`, and `cadence` fields for the current version.
+
 ## [0.11.0] — 2026-08-25
 
 Regenerated against OpenAPI spec `0.110.1`. Additive: a new Dataset feature (upload your own

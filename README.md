@@ -107,7 +107,7 @@ pluggable token stores so callers don't reinvent that plumbing.
 | `ExchangeApi` | `listExchanges()`, `listInstruments(exchangeId)`, `listSegmentInstruments(exchangeId, segment)` |
 | `ExchangeBinaryDownloads` | `getTickersHour(...)`, `getKlinesHour(...)` — Lastra/Parquet streams (manual; see note below) |
 | `StrategyApi` | `compileStrategy(body)`, `validateStrategy(strategyId)`, `getStrategy(strategyId)`, `listStrategies()`, `deleteStrategy(strategyId)`, `getStrategyCode(strategyId)` |
-| `BacktestingApi` | `prepareBacktest`, `getPrepareStatus`, `executeBacktest`, `cancelBacktest`, `getBacktestResult`, `executeSweep`, `getSweepResult`, `cancelSweep`, `getSweepSensitivity` |
+| `BacktestingApi` | `prepareBacktest`, `getPrepareStatus`, `executeBacktest`, `cancelBacktest`, `getBacktestResult`, `executeSweep`, `getSweepResult`, `cancelSweep`, `getSweepSensitivity`, `getSweepRunEquityCurve` |
 
 `listInstruments` and `listSegmentInstruments` both return an `InstrumentListResponse` HAL envelope: `data` (`List<InstrumentDetail>`), `meta` (`InstrumentListMeta`), `links` (`InstrumentLinks`). Each `InstrumentDetail` exposes data coverage per data type via `coverage` (`InstrumentCoverage` → `tickers`/`klines` `CoverageWindow`, each with `from`/`to`/`inactiveSince`) instead of the old flat `dataFrom`/`dataTo` fields.
 
@@ -122,6 +122,8 @@ source of its own, and that reads the same as an id never registered.
 All generated model types (`Exchange`, `InstrumentDetail`, `InstrumentListResponse`, `InstrumentCoverage`, `CoverageWindow`, `JobState`, `PrepareJobState`, `BacktestJobResult`, `ResultMap`, `ResponseError`, …) live under `com.qtsurfer.api.client.model`.
 
 `BacktestingApi.getPrepareStatus(exchangeId, type, jobId)` returns `PrepareJobState`: the standard job status fields plus `coverageRatio`, `totalHours`, `hoursWithData`, and `hoursWithoutData` (per-hour `rationale`: `pending_conversion` / `low_activity` / `unknown`).
+
+`ResultMap.getEquityCurve()` returns `EquityCurveResult`, not a bare point list. Its `meta` records the shape actually served; inline `ARRAY` data is in `points`, while `SHORT` data uses parallel `timestamps` and `equities` arrays. A selected sweep row can instead contain a pointer (`url`), resolved with `getSweepRunEquityCurve(...)`.
 
 ### Binary downloads (`/exchange/{ex}/tickers|klines/{base}/{quote}`)
 
