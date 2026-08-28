@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.14.0] — 2026-08-28
+
+Regenerated against OpenAPI spec `0.111.2`.
+
+### Changed 🔄
+
+- `DatasetCreated` now contains only the immediate creation response (`datasetId`, `name`, `type`,
+  `instrument`, and the upload session); it no longer presents dataset lifecycle fields absent from
+  the live response.
+
 ## [0.12.0] — 2026-08-27
 
 Regenerated against OpenAPI spec `0.110.3`.
