@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.15.0] — 2026-09-08
+
+Regenerated against OpenAPI spec `0.115.1`.
+
+### Added ✨
+
+- `ExecuteBacktestRequest.params` accepts one scalar strategy-property vector and
+  `ResultMap.params` echoes it in the execution result. `ScalarStrategyParamValue` names each
+  scalar value.
+- `DatasetWithLinks` and `DatasetVersion` expose `dataUrl` and `dataFormat` (`lastra` or
+  `parquet`) for ready dataset versions.
+
+### Changed 🔄
+
+- Dataset uploads accept CSV or parquet files, directly or inside a gzip/zip containing one file.
+- `ResultMap.winRate` is a fraction from 0.0 to 1.0, and `cagr` is a ratio (for example, `0.15`
+  represents 15%).
+
 ## [0.14.0] — 2026-08-28
 
 Regenerated against OpenAPI spec `0.111.2`.
