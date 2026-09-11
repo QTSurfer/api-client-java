@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.16.0] — 2026-09-11
+
+### Added ✨
+
+- Dataset imports and `ExecuteBacktestRequest.baseConfig` from OpenAPI `0.119.0`.
+
 ## [0.15.0] — 2026-09-08
 
 Regenerated against OpenAPI spec `0.115.1`.
