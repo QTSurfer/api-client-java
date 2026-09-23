@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.18.0] — 2026-09-23
+
+- Add typed access to the `listLive` operation from OpenAPI 0.126.2.
+
 ## [0.17.0] — 2026-09-23
 
 ### Added ✨
