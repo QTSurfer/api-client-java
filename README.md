@@ -104,11 +104,33 @@ pluggable token stores so callers don't reinvent that plumbing.
 | API class | Methods |
 | --- | --- |
 | `AuthApi` | `authenticate()` — exchange API key for a short-lived JWT |
+| `AccountApi` | `getAccount()` — read account limits, including `maxSweepCartesian`; `getAccountUsage()` — read current usage |
 | `ExchangeApi` | `listExchanges()`, `listInstruments(exchangeId)`, `listSegmentInstruments(exchangeId, segment)` |
 | `ExchangeBinaryDownloads` | `getTickersHour(...)`, `getKlinesHour(...)` — Lastra/Parquet streams (manual; see note below) |
-| `StrategyApi` | `compileStrategy(body)`, `validateStrategy(strategyId)`, `getStrategy(strategyId)`, `listStrategies()`, `deleteStrategy(strategyId)`, `getStrategyCode(strategyId)` |
+| `StrategyApi` | `compileStrategy(body)`, `validateStrategy(strategyId)`, `getStrategy(strategyId)`, `listStrategies(includeDeleted)`, `deleteStrategy(strategyId)`, `getStrategyCode(strategyId)` |
 | `BacktestingApi` | `prepareBacktest`, `getPrepareStatus`, `executeBacktest`, `cancelBacktest`, `getBacktestResult`, `executeSweep`, `getSweepResult`, `cancelSweep`, `getSweepSensitivity`, `getSweepRunEquityCurve` |
-| `LiveExecutionApi` | `startLive` (including optional paper trading), `getLive`, `listLive`, `listPublicLive`, `updateLive`, `updateLiveParams`, `stopLive`, `getLiveRunSignals` (including `type` filtering), `getLiveRunPaper`, `getLiveRunPaperEquity` |
+| `DatasetApi` | `listDatasets(includeDeleted)`, `createDataset`, `getDataset`, `deleteDataset`, `openDatasetUpload`, `finalizeDatasetUpload`, `getDatasetUpload`, `importDataset`, `getDatasetImport` |
+| `LiveExecutionApi` | `startLive` (including optional paper trading), `getLive`, `listLive`, `listPublicLive`, `updateLive`, `updateLiveParams`, `sendLiveCommand`, `stopLive`, `getLiveRunSignals` (including `type` filtering), `getLiveRunPaper`, `getLiveRunPaperEquity` |
+
+`StrategyApi.listStrategies(true)` and `DatasetApi.listDatasets(true)` include deleted entries, marked by `deletedAt`; the default remains active entries only. `Account.maxSweepCartesian` reports the maximum Cartesian sweep grid size. `LiveRun.reason` explains why a run failed or stopped when the service provides a reason.
+
+### Send a command to a running strategy
+
+`sendLiveCommand` delivers an event to a live strategy without restarting it. The strategy must implement the engine's `CommandRequestHandler`, and only the run owner can send commands. Commands are transient: they are not stored on the run and are not replayed to replicas that start later. Put state that must survive restarts in live parameters instead.
+
+```java
+import com.qtsurfer.api.client.api.LiveExecutionApi;
+import com.qtsurfer.api.client.model.LiveCommandResult;
+import com.qtsurfer.api.client.model.SendLiveCommandRequest;
+import java.util.Map;
+
+SendLiveCommandRequest request = new SendLiveCommandRequest()
+    .command("rebalance")
+    .properties(Map.of("targetWeight", 0.25));
+LiveCommandResult accepted = new LiveExecutionApi(client).sendLiveCommand(runId, request);
+```
+
+The `202` response contains the command ID and effective market position. A `503` guarantees the command was not sent and can be retried; the endpoint has no idempotency key, so do not blindly retry an ambiguous network failure.
 
 `listInstruments` and `listSegmentInstruments` both return an `InstrumentListResponse` HAL envelope: `data` (`List<InstrumentDetail>`), `meta` (`InstrumentListMeta`), `links` (`InstrumentLinks`). Each `InstrumentDetail` exposes data coverage per data type via `coverage` (`InstrumentCoverage` → `tickers`/`klines` `CoverageWindow`, each with `from`/`to`/`inactiveSince`) instead of the old flat `dataFrom`/`dataTo` fields.
 

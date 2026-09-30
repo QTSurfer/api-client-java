@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.20.0] — 2026-09-30
+
+### Added ✨
+
+- `LiveExecutionApi.sendLiveCommand(runId, request)` lets an owner deliver a transient command to a running strategy without restarting it. The `202` response identifies the accepted command; a `503` means it was not sent and may be retried. Commands have no idempotency key, so retrying after an ambiguous network failure can deliver a second command.
+- `listStrategies(includeDeleted)` and `listDatasets(includeDeleted)` can include deleted entries with their `deletedAt` timestamps. `Account.maxSweepCartesian` exposes the account's Cartesian sweep limit, and live-run details include an optional failure `reason`.
+
 ## [0.19.0] — 2026-09-25
 
 ### Added ✨
