@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.19.0] — 2026-09-25
+
+### Added ✨
+
+- Paper-trading configuration on live runs, account and equity-curve reads, and typed filtering of retained live signals from OpenAPI 0.127.0.
+
 ## [0.18.0] — 2026-09-23
 
 - Add typed access to the `listLive` operation from OpenAPI 0.126.2.
