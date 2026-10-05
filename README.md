@@ -110,7 +110,7 @@ pluggable token stores so callers don't reinvent that plumbing.
 | `StrategyApi` | `compileStrategy(body)`, `validateStrategy(strategyId)`, `getStrategy(strategyId)`, `listStrategies(includeDeleted)`, `deleteStrategy(strategyId)`, `getStrategyCode(strategyId)` |
 | `BacktestingApi` | `prepareBacktest`, `getPrepareStatus`, `executeBacktest`, `cancelBacktest`, `getBacktestResult`, `executeSweep`, `getSweepResult`, `cancelSweep`, `getSweepSensitivity`, `getSweepRunEquityCurve` |
 | `DatasetApi` | `listDatasets(includeDeleted)`, `createDataset`, `getDataset`, `deleteDataset`, `openDatasetUpload`, `finalizeDatasetUpload`, `getDatasetUpload`, `importDataset`, `getDatasetImport` |
-| `LiveExecutionApi` | `startLive` (including optional paper trading), `getLive`, `listLive`, `listPublicLive`, `updateLive`, `updateLiveParams`, `sendLiveCommand`, `stopLive`, `getLiveRunSignals` (including `type` filtering), `getLiveRunPaper`, `getLiveRunPaperEquity` |
+| `LiveExecutionApi` | `startLive` (including optional paper trading and plain stream), `getLive`, `getLiveRun`, `listLive`, `listPublicLive`, `updateLive`, `updateLiveParams`, `rotateLiveStream`, `revokeLiveStream`, `sendLiveCommand`, `stopLive`, `getLiveRunSignals` (including `type` filtering), `getLiveRunPaper`, `getLiveRunPaperEquity` |
 
 `StrategyApi.listStrategies(true)` and `DatasetApi.listDatasets(true)` include deleted entries, marked by `deletedAt`; the default remains active entries only. `Account.maxSweepCartesian` reports the maximum Cartesian sweep grid size. `LiveRun.reason` explains why a run failed or stopped when the service provides a reason.
 
@@ -143,6 +143,11 @@ source of its own, and that reads the same as an id never registered.
 `BacktestingApi.executeSweep(...)` accepts an optional `walkForward` (`WalkForwardRequest`) to run the sweep as walk-forward validation instead of a flat parameter sweep; `BacktestingApi.getSweepResult(...)` accepts an optional `ranking` query param (`plateau` default, or `raw`) controlling how its `ranked` view is ordered; `BacktestingApi.getSweepSensitivity(...)` returns marginal/heatmap aggregates over a sweep's stored rows.
 
 `LiveExecutionApi.startLive(...)` accepts an optional `paper` configuration for simulated fills, balances and positions; this never sends orders to an exchange. `getLiveRunPaper(...)` reads account snapshots and `getLiveRunPaperEquity(...)` pages through each account's equity history. Set `output` to `mix` to include paper events in retained signals, then filter with `getLiveRunSignals(..., type: "paper", ...)`.
+
+Set `StartLiveRequest.stream(true)` to receive a secret plain-WebSocket signal URL in the returned
+`LiveRunWithStream`; `getLive(...)` returns it while the run is active. Treat that URL as a credential.
+`getLiveRun(runId)` reads an owned run by canonical id with `updatedAtMs` and optional `stats`.
+`rotateLiveStream(runId)` replaces the URL; `revokeLiveStream(runId)` permanently revokes it.
 
 All generated model types (`Exchange`, `InstrumentDetail`, `InstrumentListResponse`, `InstrumentCoverage`, `CoverageWindow`, `JobState`, `PrepareJobState`, `BacktestJobResult`, `ResultMap`, `ResponseError`, …) live under `com.qtsurfer.api.client.model`.
 

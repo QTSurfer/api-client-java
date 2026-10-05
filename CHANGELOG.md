@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.21.0] — 2026-10-05
+
+### Added ✨
+
+- Add typed reads for individual live runs and controls to rotate or revoke live stream URLs.
+- Expose optional live-run statistics and stream URLs on start/latest-run responses.
+
 ## [0.20.0] — 2026-09-30
 
 ### Added ✨
