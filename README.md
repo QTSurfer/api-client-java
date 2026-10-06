@@ -146,6 +146,14 @@ source of its own, and that reads the same as an id never registered.
 
 Set `StartLiveRequest.stream(true)` to receive a secret plain-WebSocket signal URL in the returned
 `LiveRunWithStream`; `getLive(...)` returns it while the run is active. Treat that URL as a credential.
+Set `StartLiveRequest.warmFrom(seconds)` only while starting a run to replay 0–3600 seconds of market
+history; `0` disables warming and omitting it retains the platform's automatic 0–900-second warmup.
+The effective value is returned as `warmFrom` on `LiveRunWithStream` and `LiveRunDetail` (it can be
+absent only on historical runs). It is not a live parameter and is not present on `LiveRun` stop responses.
+On a `LiveSourceRequest`, `instruments` can be omitted to use the selection declared by the compiled
+strategy, or every instrument in its exchange/segment if the strategy declares none. Explicit lists
+remain supported; matching is case-insensitive, and wildcard pairs such as `*/USDT` are subject to
+the account plan. Returned `LiveSource.instruments` reports the submitted list or resolved selection.
 `getLiveRun(runId)` reads an owned run by canonical id with `updatedAtMs` and optional `stats`.
 `rotateLiveStream(runId)` replaces the URL; `revokeLiveStream(runId)` permanently revokes it.
 

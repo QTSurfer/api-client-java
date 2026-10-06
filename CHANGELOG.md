@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.22.0] — 2026-10-06
+
+### Added ✨
+
+- `StartLiveRequest.warmFrom` configures 0–3600 seconds of market replay before a live run starts;
+  `0` disables warming and omission keeps the platform's automatic warmup. The effective value is
+  returned by `LiveRunWithStream` and `LiveRunDetail` for newly created runs.
+- `LiveSourceRequest.instruments` is optional: omission uses a compiled strategy's declared
+  selection, or every exchange/segment instrument when none is declared. The returned `LiveSource`
+  reports the submitted list or the resolved selection; symbols are matched case-insensitively.
+
 ## [0.21.0] — 2026-10-05
 
 ### Added ✨
