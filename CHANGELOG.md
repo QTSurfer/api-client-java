@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.23.0] — 2026-10-10
+
+### Added ✨
+
+- Regenerated from OpenAPI 0.128.25. `StartLiveRequest.sandbox(true)` lets an owner repeat the
+  sandbox trial for a compilation with an earlier promoted run and no runs stopped for exceeding
+  resource limits, for example to inspect its retained WebSocket signal history while debugging.
+  Otherwise eligible compilations start in `LIVE`; first runs and recompiled strategies start in
+  `SANDBOX`.
+
 ## [0.22.0] — 2026-10-06
 
 ### Added ✨

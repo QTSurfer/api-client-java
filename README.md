@@ -156,6 +156,10 @@ remain supported; matching is case-insensitive, and wildcard pairs such as `*/US
 the account plan. Returned `LiveSource.instruments` reports the submitted list or resolved selection.
 `getLiveRun(runId)` reads an owned run by canonical id with `updatedAtMs` and optional `stats`.
 `rotateLiveStream(runId)` replaces the URL; `revokeLiveStream(runId)` permanently revokes it.
+A compiled strategy starts directly in `LIVE` when an earlier run of the same compilation was
+promoted and none of its runs was stopped for exceeding resource limits. Set
+`StartLiveRequest.sandbox(true)` to repeat the trial; this is useful when debugging because recent
+signal history is available over the sandbox WebSocket channel only.
 
 All generated model types (`Exchange`, `InstrumentDetail`, `InstrumentListResponse`, `InstrumentCoverage`, `CoverageWindow`, `JobState`, `PrepareJobState`, `BacktestJobResult`, `ResultMap`, `ResponseError`, …) live under `com.qtsurfer.api.client.model`.
 
