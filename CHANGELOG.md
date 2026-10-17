@@ -10,17 +10,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added ✨
 
+- Recognize `AuthTokenError.CodeEnum.APIKEY_WITHOUT_SCOPES` when token authentication returns
+  `403`: deployments that require scopes reject a scope-free key without minting a token.
+  Create a key with at least one resource/action scope before trying again.
 - Discover CEX instruments or DEX pools through the typed `InstrumentCatalogueResponse` union.
   Exchanges report `venueType`, `segments` and `liveSegments`; pool results preserve token addresses,
   fees, liquidity, quote volume and optional prices. Live requests accept `cex`/`dex` venue types.
 - Import CEX spot history with `DatasetImportCexRequest`, select the expanded import cadences,
-  and read API-key scopes as a resource-to-actions map from token and account responses.
+  and read API-key scopes as a resource-to-actions map from token and account responses. A listed
+  resource has at least one action, and a key without scopes is `{}`.
 - Keep media type, timestamp units and provisional-data boundaries with
   `ExchangeBinaryDownloads.getTickersHourWithMetadata` / `getKlinesHourWithMetadata`.
 
 ### Changed 🔄
 
-- Adopt OpenAPI 0.128.36. Hourly downloads cover the last seven days: older hours return
+- Adopt OpenAPI 0.128.37. Hourly downloads cover the last seven days: older hours return
   `OUTSIDE_WINDOW` with an import recovery call. `ResponseError.reason` and `next` preserve typed
   recovery advice; retryable `404`/`503` responses retain `Retry-After`.
 - Lastra media type is `application/vnd.qtsurfer.lastra` and `ts` is epoch microseconds;

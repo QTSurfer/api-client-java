@@ -94,6 +94,17 @@ AuthTokenResponse token = new AuthApi(apikeyClient).authenticate();
 String jwt = token.getAccessToken();  // feed to a Bearer-authed ApiClient
 ```
 
+`AuthApi.authenticate()` throws `ApiException` for rejected keys. `401` means an invalid,
+revoked or expired key; `403` with `apikey_without_scopes` means the key is valid but carries no
+scopes and the deployment requires them. No token is minted: create a key with at least one
+resource/action scope before retrying. Deserialize the exception's response body as
+`AuthTokenError` to inspect `CodeEnum.APIKEY_WITHOUT_SCOPES`.
+
+Successful token responses carry a `scopes` object, for example `{"exchanges":["read"]}`.
+A resource is listed only with at least one action; a key with no scopes has `{}` where such a
+key may authenticate. This authentication requirement is separate from checking the scope of
+each operation, which the API does not yet enforce.
+
 For production use, prefer the [`com.qtsurfer:sdk`](https://github.com/QTSurfer/sdk-java)
 `authenticate(apikey)` helper — it returns an `AuthenticatedClient` that refreshes the
 JWT transparently, reads `QTSURFER_APIKEY` from the environment, and supports
@@ -143,7 +154,8 @@ and pool creation times are absent. Pool market data is refreshed hourly. `Excha
 `DatasetImportRequest.type(CEX)` selects a `DatasetImportCexRequest` block (`exchange`, `segment=spot`,
 `dataType=ticker|klines`). CEX imports accept all fifteen cadences from `1s` to `1q`; DEX accepts
 `1s`, `1m`, `5m` or omitted native events. Token and account `scopes` are a resource-to-actions map,
-for example `{"exchanges":["read"]}`, reported but not yet enforced by the API.
+for example `{"exchanges":["read"]}`. Per-operation scope checks are not yet enforced; token
+authentication can still require the key to carry at least one scope, as described above.
 
 `getStrategy(...)` and `validateStrategy(...)`'s already-validated `200` response carry an optional
 `links` (`StrategyLinks` → `code`: `HalLink`, `.../strategy/{strategyId}/code`) pointing at
