@@ -37,7 +37,11 @@ class ExchangeBinaryDownloadsTest {
             exchanges.add(exchange);
             byte[] body = responseBody.get();
             int status = responseStatus.get();
-            exchange.getResponseHeaders().add("Content-Type", "application/vnd.lastra");
+            exchange.getResponseHeaders().add("Content-Type", "application/vnd.qtsurfer.lastra");
+            exchange.getResponseHeaders().add("X-Ts-Unit", "micros");
+            exchange.getResponseHeaders().add("X-Data-Status", "provisional");
+            exchange.getResponseHeaders().add("X-Data-Through", "2026-10-17T10:30:00Z");
+            exchange.getResponseHeaders().add("Retry-After", "30");
             exchange.sendResponseHeaders(status, body.length == 0 ? -1 : body.length);
             try (var os = exchange.getResponseBody()) {
                 if (body.length > 0) os.write(body);
@@ -144,5 +148,33 @@ class ExchangeBinaryDownloadsTest {
     void formatEnumExposesWireValue() {
         assertEquals("lastra", ExchangeBinaryDownloads.Format.LASTRA.wireValue());
         assertEquals("parquet", ExchangeBinaryDownloads.Format.PARQUET.wireValue());
+    }
+
+    @Test
+    void metadataDownloadPreservesBytesUnitsAndProvisionalBoundary() throws Exception {
+        byte[] payload = new byte[] {0, -1, -128, 42};
+        responseBody.set(payload);
+        try (BinaryDownload response = new ExchangeBinaryDownloads(apiClient)
+                .getKlinesHourWithMetadata("binance", "BTC", "USDT", "2026-10-17T10", null)) {
+            assertArrayEquals(payload, response.body().readAllBytes());
+            assertEquals("application/vnd.qtsurfer.lastra", response.contentType().orElseThrow());
+            assertEquals("micros", response.timestampUnit().orElseThrow());
+            assertEquals("provisional", response.dataStatus().orElseThrow());
+            assertEquals("2026-10-17T10:30:00Z", response.dataThrough().orElseThrow());
+        }
+    }
+
+    @Test
+    void downloadErrorRetainsStructuredReasonNextAndRetryAfter() {
+        responseStatus.set(400);
+        responseBody.set("""
+                {"message":"Import this hour","reason":"OUTSIDE_WINDOW",
+                "next":{"method":"POST","path":"/datasets/imports","body":{"type":"cex"}}}
+                """.getBytes(StandardCharsets.UTF_8));
+        ApiException error = assertThrows(ApiException.class, () -> new ExchangeBinaryDownloads(apiClient)
+                .getTickersHour("binance", "BTC", "USDT", "2026-01-15T10"));
+        assertTrue(error.getResponseBody().contains("OUTSIDE_WINDOW"));
+        assertTrue(error.getResponseBody().contains("/datasets/imports"));
+        assertEquals("30", error.getResponseHeaders().firstValue("Retry-After").orElseThrow());
     }
 }

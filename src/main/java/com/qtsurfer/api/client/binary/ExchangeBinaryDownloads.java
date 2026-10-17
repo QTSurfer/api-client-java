@@ -20,7 +20,7 @@ import java.util.function.Consumer;
  *
  * <p>The auto-generated {@code ExchangeApi#downloadTickers} and {@code downloadKlines}
  * methods are unusable for binary payloads: openapi-generator's {@code native} library decodes the
- * body as a UTF-8 string and feeds it to Jackson, which corrupts {@code application/vnd.lastra}
+ * body as a UTF-8 string and feeds it to Jackson, which corrupts {@code application/vnd.qtsurfer.lastra}
  * and {@code application/vnd.apache.parquet} bytes. This class is the manual escape hatch — it
  * issues the request through {@link ApiClient}'s HTTP client and request interceptor (so auth
  * keeps working) and returns the response body as an {@link InputStream} so callers can stream
@@ -72,7 +72,7 @@ public final class ExchangeBinaryDownloads {
      */
     public InputStream getTickersHour(String exchangeId, String base, String quote, String hour, Format format)
             throws ApiException {
-        return download("getTickersHour", "tickers", exchangeId, base, quote, hour, format);
+        return getTickersHourWithMetadata(exchangeId, base, quote, hour, format).body();
     }
 
     /** Same as {@link #getTickersHour} with the default Lastra format. */
@@ -87,7 +87,7 @@ public final class ExchangeBinaryDownloads {
      */
     public InputStream getKlinesHour(String exchangeId, String base, String quote, String hour, Format format)
             throws ApiException {
-        return download("getKlinesHour", "klines", exchangeId, base, quote, hour, format);
+        return getKlinesHourWithMetadata(exchangeId, base, quote, hour, format).body();
     }
 
     /** Same as {@link #getKlinesHour} with the default Lastra format. */
@@ -95,7 +95,33 @@ public final class ExchangeBinaryDownloads {
         return getKlinesHour(exchangeId, base, quote, hour, null);
     }
 
-    private InputStream download(
+    /**
+     * Download tickers with timestamp-unit and provisional-data headers preserved.
+     *
+     * @param exchangeId centralized exchange id
+     * @param base base asset
+     * @param quote quote asset
+     * @param hour UTC hour selector within the last seven days, {@code YYYY-MM-DDTHH}
+     * @param format binary format; {@code null} selects Lastra
+     * @return the streaming response; caller closes it
+     * @throws ApiException on HTTP failure, including typed error body and retry headers
+     */
+    public BinaryDownload getTickersHourWithMetadata(
+            String exchangeId, String base, String quote, String hour, Format format) throws ApiException {
+        return download("getTickersHour", "tickers", exchangeId, base, quote, hour, format);
+    }
+
+    /**
+     * Download klines with timestamp-unit and provisional-data headers preserved.
+     *
+     * @see #getTickersHourWithMetadata(String, String, String, String, Format)
+     */
+    public BinaryDownload getKlinesHourWithMetadata(
+            String exchangeId, String base, String quote, String hour, Format format) throws ApiException {
+        return download("getKlinesHour", "klines", exchangeId, base, quote, hour, format);
+    }
+
+    private BinaryDownload download(
             String operationId,
             String resource,
             String exchangeId,
@@ -138,7 +164,7 @@ public final class ExchangeBinaryDownloads {
         if (response.statusCode() / 100 != 2) {
             throw asApiException(operationId, response);
         }
-        return response.body();
+        return new BinaryDownload(response.body(), response.headers());
     }
 
     private static ApiException asApiException(String operationId, HttpResponse<InputStream> response) {

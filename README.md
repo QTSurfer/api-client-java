@@ -132,7 +132,18 @@ LiveCommandResult accepted = new LiveExecutionApi(client).sendLiveCommand(runId,
 
 The `202` response contains the command ID and effective market position. A `503` guarantees the command was not sent and can be retried; the endpoint has no idempotency key, so do not blindly retry an ambiguous network failure.
 
-`listInstruments` and `listSegmentInstruments` both return an `InstrumentListResponse` HAL envelope: `data` (`List<InstrumentDetail>`), `meta` (`InstrumentListMeta`), `links` (`InstrumentLinks`). Each `InstrumentDetail` exposes data coverage per data type via `coverage` (`InstrumentCoverage` → `tickers`/`klines` `CoverageWindow`, each with `from`/`to`/`inactiveSince`) instead of the old flat `dataFrom`/`dataTo` fields.
+`listInstruments` and `listSegmentInstruments` return `InstrumentCatalogueResponse`: inspect
+`getActualInstance()` for `InstrumentListResponse` (CEX) or `PoolListResponse` (DEX). Both carry
+`data`, `meta.venueType` and HAL links; empty lists still identify their venue. `InstrumentDetail`
+has required `symbol`, optional `settle` and per-type `coverage`. `PoolDetail` includes the pool
+address (`id`), symbol, token addresses, fees, liquidity and USD volume. Missing prices/quote volumes
+and pool creation times are absent. Pool market data is refreshed hourly. `Exchange` supplies valid
+`venueType`, `segments` and `liveSegments`; a DEX source is one pool address with `type=kline`.
+
+`DatasetImportRequest.type(CEX)` selects a `DatasetImportCexRequest` block (`exchange`, `segment=spot`,
+`dataType=ticker|klines`). CEX imports accept all fifteen cadences from `1s` to `1q`; DEX accepts
+`1s`, `1m`, `5m` or omitted native events. Token and account `scopes` are a resource-to-actions map,
+for example `{"exchanges":["read"]}`, reported but not yet enforced by the API.
 
 `getStrategy(...)` and `validateStrategy(...)`'s already-validated `200` response carry an optional
 `links` (`StrategyLinks` → `code`: `HalLink`, `.../strategy/{strategyId}/code`) pointing at
@@ -174,18 +185,32 @@ These endpoints return raw [Lastra](https://github.com/QTSurfer/lastra-java) byt
 ```java
 import com.qtsurfer.api.client.binary.ExchangeBinaryDownloads;
 import com.qtsurfer.api.client.binary.ExchangeBinaryDownloads.Format;
+import java.time.ZonedDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
 ExchangeBinaryDownloads downloads = new ExchangeBinaryDownloads(client);
-try (var in = downloads.getTickersHour("binance", "BTC", "USDT", "2026-01-15T10")) {
-    Files.copy(in, Path.of("BTC_USDT_2026-01-15_h10.lastra"));
+String hour = ZonedDateTime.now(ZoneOffset.UTC).minusHours(2)
+        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH"));
+try (var in = downloads.getTickersHour("binance", "BTC", "USDT", hour)) {
+    Files.copy(in, Path.of("BTC_USDT.lastra"));
 }
 
-try (var in = downloads.getKlinesHour("binance", "BTC", "USDT", "2026-01-15T10", Format.PARQUET)) {
+try (var in = downloads.getKlinesHour("binance", "BTC", "USDT", hour, Format.PARQUET)) {
     // feed into Apache Parquet, DuckDB, etc.
 }
 ```
 
 The class reuses the `ApiClient`'s `HttpClient` and request interceptor, so any `Authorization` header set at the client level applies automatically.
+
+Hourly downloads serve the last seven days. Use `getTickersHourWithMetadata` or
+`getKlinesHourWithMetadata` when interpreting or caching the bytes: `timestampUnit()` preserves
+`X-Ts-Unit: micros` for Lastra (`application/vnd.qtsurfer.lastra`); Parquet keeps millisecond
+timestamps in its schema. `dataStatus()` can be `provisional`, and `dataThrough()` is the last row's
+ISO-8601 UTC time. Recent hours may instead return `404 NOT_YET_AVAILABLE` with `Retry-After`.
+`404 NO_DATA` identifies an empty stored hour; `503 TEMPORARILY_UNAVAILABLE` is retryable after
+`Retry-After`. `400 OUTSIDE_WINDOW` carries `ResponseError.next`, a CEX dataset import of the hour.
+Use a recent UTC hour (`YYYY-MM-DDTHH`) rather than copying an example's calendar date.
 
 ## Configuring the client
 
