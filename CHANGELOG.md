@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.25.0] — 2026-10-23
+
+### Added ✨
+
+- Model `403 insufficient_scope` responses as `InsufficientScopeError` with the missing
+  `resource:action` scope in `required`.
+- Expose `retryable` on API errors and execute job states.
+- Support per-instrument paper accounts, mark-to-market positions, and paper-equity curves using
+  the shared `EquityCurveResult` shape and its transform and paging options.
+
+### Changed 🔄
+
+- Adopt OpenAPI 0.128.46, including kline backtests over ready user datasets and dataset type
+  inference when an uploaded version becomes ready.
+
 ## [0.24.0] — 2026-10-17
 
 ### Added ✨
