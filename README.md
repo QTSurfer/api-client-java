@@ -156,8 +156,12 @@ and pool creation times are absent. Pool market data is refreshed hourly. `Excha
 `venueType`, `segments` and `liveSegments`; a DEX source is one pool address with `type=kline`.
 
 `DatasetImportRequest.type(CEX)` selects a `DatasetImportCexRequest` block (`exchange`, `segment=spot`,
-`dataType=ticker|klines`). CEX imports accept all fifteen cadences from `1s` to `1q`; DEX accepts
-`1s`, `1m`, `5m` or omitted native events. Token and account `scopes` are a resource-to-actions map,
+`dataType=ticker|klines`). Managed-exchange imports and prepares accept the cadences included in the
+account's plan; omission uses that plan's default. `DatasetImportCreated.getCadence()` and
+`PrepareAccepted.getCadence()` report the effective cadence when known. A `402 PlanRequiredError` means
+the cadence or requested data shape is not included in the plan and is not retryable. DEX imports
+default to candles at the plan cadence; include `id` and `version` when requesting native per-trade
+history on a plan that includes the source's native rate. Token and account `scopes` are a resource-to-actions map,
 for example `{"exchanges":["read"]}`. The API enforces these scopes per operation and reports
 the missing grant in a typed 403 error.
 

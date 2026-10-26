@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.27.0] — 2026-10-26
+
+### Added ✨
+
+- Report the effective cadence in prepare and dataset-import acceptance responses, and model plan cadence
+  refusals as typed `402` errors.
+
+### Changed 🔄
+
+- Adopt OpenAPI 0.128.49: managed-exchange preparation and imports use the plan's default cadence when
+  omitted; DEX imports default to candles except when a plan includes the source's native rate.
+
 ## [0.26.0] — 2026-10-26
 
 ### Added ✨

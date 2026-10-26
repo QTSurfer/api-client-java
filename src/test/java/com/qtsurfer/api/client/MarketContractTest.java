@@ -5,7 +5,10 @@ import com.qtsurfer.api.client.invoker.ApiClient;
 import com.qtsurfer.api.client.model.AuthTokenResponse;
 import com.qtsurfer.api.client.model.InstrumentCatalogueResponse;
 import com.qtsurfer.api.client.model.InstrumentListResponse;
+import com.qtsurfer.api.client.model.DatasetImportCreated;
+import com.qtsurfer.api.client.model.PlanRequiredError;
 import com.qtsurfer.api.client.model.PoolListResponse;
+import com.qtsurfer.api.client.model.PrepareAccepted;
 import com.qtsurfer.api.client.model.ResponseError;
 import com.qtsurfer.api.client.model.LivePaperConfig;
 import com.qtsurfer.api.client.model.PoolLinks;
@@ -68,6 +71,35 @@ class MarketContractTest {
         assertEquals("OUTSIDE_WINDOW", error.getReason());
         assertEquals("POST", error.getNext().getMethod().getValue());
         assertEquals("cex", mapper.valueToTree(error.getNext().getBody()).get("type").asText());
+    }
+
+    @Test
+    void prepareAcceptanceReportsTheEffectiveCadence() throws Exception {
+        var accepted = mapper.readValue("""
+                {"jobId":"prep-1","cadence":"3m"}
+                """, PrepareAccepted.class);
+        assertEquals("prep-1", accepted.getJobId());
+        assertEquals("3m", accepted.getCadence());
+    }
+
+    @Test
+    void datasetImportAcceptanceReportsTheEffectiveCadence() throws Exception {
+        var accepted = mapper.readValue("""
+                {"datasetId":"ds-1","importId":"imp-1","jobId":"job-1",
+                "status":"fetching","cadence":"5m"}
+                """, DatasetImportCreated.class);
+        assertEquals("5m", accepted.getCadence());
+    }
+
+    @Test
+    void planCadenceRefusalKeepsItsUpgradeLinkAndRetryability() throws Exception {
+        var error = mapper.readValue("""
+                {"code":402,"message":"cadence 1m is not included","retryable":false,
+                "upgradeUrl":"https://example.com/upgrade"}
+                """, PlanRequiredError.class);
+        assertEquals(402, error.getCode());
+        assertFalse(error.getRetryable());
+        assertEquals("https://example.com/upgrade", error.getUpgradeUrl().toString());
     }
 
     @Test
