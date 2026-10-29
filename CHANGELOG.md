@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.28.0] — 2026-10-29
+
+### Added ✨
+
+- Support Solana pool history in dataset imports with the `SOLANA` network value. Solana imports build
+  candles only, use the plan default when cadence is omitted, and do not need protocol or version.
+
+### Changed 🔄
+
+- Adopt OpenAPI 0.128.50: candle imports older than 180 days are refused up front, and DEX candle
+  intervals with no trades may be absent from the result.
+
 ## [0.27.0] — 2026-10-26
 
 ### Added ✨
