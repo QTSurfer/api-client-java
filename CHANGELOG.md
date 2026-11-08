@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.29.0] — 2026-11-08
+
+### Added ✨
+
+- Retry one API or storage request against `api2.qtsurfer.net` or `storage2.qtsurfer.net` after
+  a connection failure. Each new request starts at the primary host; HTTP responses are not retried.
+- Adopt OpenAPI 0.128.54.
+
 ## [0.28.0] — 2026-10-29
 
 ### Added ✨

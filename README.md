@@ -25,6 +25,12 @@ Intentionally thin: one method per endpoint, 1:1 with the spec. For workflow orc
 - **JDK 17+** — modern language features, long-term support.
 - **Distributed via JitPack** today; Maven Central later.
 
+Requests whose hostname starts with the `api` or `storage` label retry once using the same hostname
+suffix with a `2` appended to that label (for example, `api.qtsurfer.net` → `api2.qtsurfer.net`,
+or `storage.qtsurfer.com` → `storage2.qtsurfer.com`) after a connection failure. The retry preserves
+the rest of the URL, including signed storage paths and query strings. HTTP responses are returned
+without failover; each subsequent request starts at the primary hostname.
+
 ## Installation
 
 ### Via JitPack
