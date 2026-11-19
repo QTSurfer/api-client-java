@@ -6,7 +6,7 @@
 
     <groupId>com.qtsurfer</groupId>
     <artifactId>api-client-java</artifactId>
-    <version>0.29.0</version>
+    <version>0.30.0</version>
     <packaging>jar</packaging>
 
     <name>QTSurfer API Client</name>
@@ -49,7 +49,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <openapi.generator.version>7.24.0</openapi.generator.version>
-        <openapi.spec.url>https://raw.githubusercontent.com/QTSurfer/qtsurfer-api/main/openapi.yaml</openapi.spec.url>
+        <openapi.spec.url>https://raw.githubusercontent.com/QTSurfer/qtsurfer-api/2748c5a5406f0c1b1c32e0923c0799c1a5fe9dac/openapi.yaml</openapi.spec.url>
         <generated.sources.dir>${project.build.directory}/generated-sources/openapi</generated.sources.dir>
 
         <jackson.version>2.18.2</jackson.version>

@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.30.0] — 2026-11-19
+
+### Added ✨
+
+- Expose API-key expiry in token and account responses, and add operations to attach or detach a
+  market-data source from a running live run.
+
+### Changed 🔄
+
+- Adopt OpenAPI 0.128.57. CSV timestamp inputs also accept date-only and zone-less date-time forms,
+  interpreted as UTC; this is a server parsing change and does not add client-side conversion.
+
 ## [0.29.0] — 2026-11-08
 
 ### Added ✨

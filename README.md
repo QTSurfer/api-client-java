@@ -100,8 +100,11 @@ AuthTokenResponse token = new AuthApi(apikeyClient).authenticate();
 String jwt = token.getAccessToken();  // feed to a Bearer-authed ApiClient
 ```
 
-`AuthApi.authenticate()` throws `ApiException` for rejected keys. `401` means an invalid,
-revoked or expired key; `403` with `apikey_without_scopes` means the key is valid but carries no
+`AuthApi.authenticate()` throws `ApiException` for rejected keys. `401` means a missing, unknown,
+revoked or expired key; the response intentionally does not distinguish those cases. A successful
+token may include `key_exp` (seconds since epoch) when the API key itself expires; the same expiry is
+available as `apiKeyExpiresAt` from `AccountApi.getAccount()`. This is the API key's expiry, separate
+from the token's `expires_in`. `403` with `apikey_without_scopes` means the key is valid but carries no
 scopes and the deployment requires them. No token is minted: create a key with at least one
 resource/action scope before retrying. Operations also return `403` with an
 `InsufficientScopeError` (`code`, `message`, and required `resource:action` scope) when the key
@@ -125,13 +128,13 @@ pluggable token stores so callers don't reinvent that plumbing.
 | API class | Methods |
 | --- | --- |
 | `AuthApi` | `authenticate()` — exchange API key for a short-lived JWT |
-| `AccountApi` | `getAccount()` — read account limits, including `maxSweepCartesian`; `getAccountUsage()` — read current usage |
+| `AccountApi` | `getAccount()` — read account limits, including `maxSweepCartesian` and optional `apiKeyExpiresAt`; `getAccountUsage()` — read current usage |
 | `ExchangeApi` | `listExchanges()`, `listInstruments(exchangeId)`, `listSegmentInstruments(exchangeId, segment)` |
 | `ExchangeBinaryDownloads` | `getTickersHour(...)`, `getKlinesHour(...)` — Lastra/Parquet streams (manual; see note below) |
 | `StrategyApi` | `compileStrategy(body)`, `validateStrategy(strategyId)`, `getStrategy(strategyId)`, `listStrategies(includeDeleted)`, `deleteStrategy(strategyId)`, `getStrategyCode(strategyId)` |
 | `BacktestingApi` | `prepareBacktest`, `getPrepareStatus`, `executeBacktest`, `cancelBacktest`, `getBacktestResult`, `executeSweep`, `getSweepResult`, `cancelSweep`, `getSweepSensitivity`, `getSweepRunEquityCurve` |
 | `DatasetApi` | `listDatasets(includeDeleted)`, `createDataset`, `getDataset`, `deleteDataset`, `openDatasetUpload`, `finalizeDatasetUpload`, `getDatasetUpload`, `importDataset`, `getDatasetImport` |
-| `LiveExecutionApi` | `startLive` (including optional paper trading and plain stream), `getLive`, `getLiveRun`, `listLive`, `listPublicLive`, `updateLive`, `updateLiveParams`, `rotateLiveStream`, `revokeLiveStream`, `sendLiveCommand`, `stopLive`, `getLiveRunSignals` (including `type` filtering), `getLiveRunPaper`, `getLiveRunPaperEquity` |
+| `LiveExecutionApi` | `startLive` (including optional paper trading and plain stream), `attachLiveSource`, `detachLiveSource`, `getLive`, `getLiveRun`, `listLive`, `listPublicLive`, `updateLive`, `updateLiveParams`, `rotateLiveStream`, `revokeLiveStream`, `sendLiveCommand`, `stopLive`, `getLiveRunSignals` (including `type` filtering), `getLiveRunPaper`, `getLiveRunPaperEquity` |
 
 `StrategyApi.listStrategies(true)` and `DatasetApi.listDatasets(true)` include deleted entries, marked by `deletedAt`; the default remains active entries only. `Account.maxSweepCartesian` reports the maximum Cartesian sweep grid size. `LiveRun.reason` explains why a run failed or stopped when the service provides a reason.
 
