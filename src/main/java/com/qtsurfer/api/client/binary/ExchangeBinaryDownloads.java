@@ -101,7 +101,7 @@ public final class ExchangeBinaryDownloads {
      * @param exchangeId centralized exchange id
      * @param base base asset
      * @param quote quote asset
-     * @param hour UTC hour selector within the last seven days, {@code YYYY-MM-DDTHH}
+     * @param hour UTC hour selector within the download window, {@code YYYY-MM-DDTHH}
      * @param format binary format; {@code null} selects Lastra
      * @return the streaming response; caller closes it
      * @throws ApiException on HTTP failure, including typed error body and retry headers
