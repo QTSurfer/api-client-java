@@ -1,10 +1,24 @@
 # Changelog
 
-All notable changes to `com.qtsurfer:api-client` are documented here.
+All notable changes to `com.qtsurfer:api-client-java` are documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.31.0] — 2026-11-25
+
+### Added ✨
+
+- Generate dataset collection and signal channel operations, dataset import provenance and quotas,
+  strategy names and languages, and Solana pool and live-source fields from OpenAPI 0.128.70.
+
+### Changed 🔄
+
+- `DatasetApi.listDatasets(includeDeleted, collectionId)` accepts a collection ID, `"none"` for root
+  datasets, or `null` for the previous unfiltered behavior. Its HTTP-info method takes the same filter.
+- Live parameter updates on a waiting run may omit their effective timestamp. Strategy detach
+  signals are available from REST history with `type=system`.
 
 ## [0.30.0] — 2026-11-19
 

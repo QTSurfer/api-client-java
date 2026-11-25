@@ -13,12 +13,12 @@
 </p>
 
 <p align="center">
-  <code>com.qtsurfer:api-client-java</code> · <code>com.qtsurfer:api-client-java</code>
+  <code>com.qtsurfer:api-client-java</code>
 </p>
 
 ---
 
-Intentionally thin: one method per endpoint, 1:1 with the spec. For workflow orchestration (polling, retries, domain objects, unified errors), use [`com.qtsurfer:sdk`](https://github.com/QTSurfer/sdk-java).
+Intentionally thin: one method per endpoint, 1:1 with the spec. For workflow orchestration (polling, retries, domain objects, unified errors), use [`com.qtsurfer:sdk-java`](https://github.com/QTSurfer/sdk-java).
 
 - **Zero HTTP runtime deps** — `java.net.http.HttpClient` (JDK built-in) + Jackson for JSON.
 - **Spec-driven** — generated sources fetched from [`QTSurfer/qtsurfer-api`](https://github.com/QTSurfer/qtsurfer-api) on every build.
@@ -118,7 +118,7 @@ key may authenticate. This authentication requirement is separate from per-opera
 enforcement: each protected operation returns `403 insufficient_scope` and its required grant when
 the key behind the token lacks that scope.
 
-For production use, prefer the [`com.qtsurfer:sdk`](https://github.com/QTSurfer/sdk-java)
+For production use, prefer the [`com.qtsurfer:sdk-java`](https://github.com/QTSurfer/sdk-java)
 `authenticate(apikey)` helper — it returns an `AuthenticatedClient` that refreshes the
 JWT transparently, reads `QTSURFER_APIKEY` from the environment, and supports
 pluggable token stores so callers don't reinvent that plumbing.
@@ -133,10 +133,11 @@ pluggable token stores so callers don't reinvent that plumbing.
 | `ExchangeBinaryDownloads` | `getTickersHour(...)`, `getKlinesHour(...)` — Lastra/Parquet streams (manual; see note below) |
 | `StrategyApi` | `compileStrategy(body)`, `validateStrategy(strategyId)`, `getStrategy(strategyId)`, `listStrategies(includeDeleted)`, `deleteStrategy(strategyId)`, `getStrategyCode(strategyId)` |
 | `BacktestingApi` | `prepareBacktest`, `getPrepareStatus`, `executeBacktest`, `cancelBacktest`, `getBacktestResult`, `executeSweep`, `getSweepResult`, `cancelSweep`, `getSweepSensitivity`, `getSweepRunEquityCurve` |
-| `DatasetApi` | `listDatasets(includeDeleted)`, `createDataset`, `getDataset`, `deleteDataset`, `openDatasetUpload`, `finalizeDatasetUpload`, `getDatasetUpload`, `importDataset`, `getDatasetImport` |
+| `DatasetApi` | `listDatasets(includeDeleted, collectionId)`, `moveDataset`, collection CRUD, `createDataset`, `getDataset`, `deleteDataset`, `openDatasetUpload`, `finalizeDatasetUpload`, `getDatasetUpload`, `importDataset`, `getDatasetImport` |
 | `LiveExecutionApi` | `startLive` (including optional paper trading and plain stream), `attachLiveSource`, `detachLiveSource`, `getLive`, `getLiveRun`, `listLive`, `listPublicLive`, `updateLive`, `updateLiveParams`, `rotateLiveStream`, `revokeLiveStream`, `sendLiveCommand`, `stopLive`, `getLiveRunSignals` (including `type` filtering), `getLiveRunPaper`, `getLiveRunPaperEquity` |
+| `SignalChannelsApi` | Create and discover signal channels; publish notices; manage offers, codes and subscriptions; and inspect deliveries |
 
-`StrategyApi.listStrategies(true)` and `DatasetApi.listDatasets(true)` include deleted entries, marked by `deletedAt`; the default remains active entries only. `Account.maxSweepCartesian` reports the maximum Cartesian sweep grid size. `LiveRun.reason` explains why a run failed or stopped when the service provides a reason.
+`StrategyApi.listStrategies(true)` and `DatasetApi.listDatasets(true, null)` include deleted entries, marked by `deletedAt`; the default remains active entries only. Pass a collection ID in the second argument to filter by collection, or `"none"` for root datasets. `Account.maxSweepCartesian` reports the maximum Cartesian sweep grid size. `LiveRun.reason` explains why a run failed or stopped when the service provides a reason.
 
 ### Send a command to a running strategy
 
@@ -187,13 +188,13 @@ source of its own, and that reads the same as an id never registered.
 Set `StartLiveRequest.stream(true)` to receive a secret plain-WebSocket signal URL in the returned
 `LiveRunWithStream`; `getLive(...)` returns it while the run is active. Treat that URL as a credential.
 Set `StartLiveRequest.warmFrom(seconds)` only while starting a run to replay 0–3600 seconds of market
-history; `0` disables warming and omitting it retains the platform's automatic 0–900-second warmup.
+history; `0` disables warming and omitting it retains the platform's automatic warmup.
 The effective value is returned as `warmFrom` on `LiveRunWithStream` and `LiveRunDetail` (it can be
 absent only on historical runs). It is not a live parameter and is not present on `LiveRun` stop responses.
 On a `LiveSourceRequest`, `instruments` can be omitted to use the selection declared by the compiled
 strategy, or every instrument in its exchange/segment if the strategy declares none. Explicit lists
 remain supported; matching is case-insensitive, and wildcard pairs such as `*/USDT` are subject to
-the account plan. Returned `LiveSource.instruments` reports the submitted list or resolved selection.
+the account plan for CEX sources. DEX sources require one EVM pool address or a case-sensitive Solana mint. Returned `LiveSource.instruments` reports the submitted list or resolved selection.
 `getLiveRun(runId)` reads an owned run by canonical id with `updatedAtMs` and optional `stats`.
 `rotateLiveStream(runId)` replaces the URL; `revokeLiveStream(runId)` permanently revokes it.
 A compiled strategy starts directly in `LIVE` when an earlier run of the same compilation was
@@ -232,7 +233,7 @@ try (var in = downloads.getKlinesHour("binance", "BTC", "USDT", hour, Format.PAR
 
 The class reuses the `ApiClient`'s `HttpClient` and request interceptor, so any `Authorization` header set at the client level applies automatically.
 
-Hourly downloads serve the last seven days. Use `getTickersHourWithMetadata` or
+Hourly downloads serve recent data. For older hours, use the dataset import endpoint when the API returns OUTSIDE_WINDOW. Use `getTickersHourWithMetadata` or
 `getKlinesHourWithMetadata` when interpreting or caching the bytes: `timestampUnit()` preserves
 `X-Ts-Unit: micros` for Lastra (`application/vnd.qtsurfer.lastra`); Parquet keeps millisecond
 timestamps in its schema. `dataStatus()` can be `provisional`, and `dataThrough()` is the last row's
